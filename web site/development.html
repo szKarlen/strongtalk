@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"hhtp://www.w2.org/TR/xhtml1/DTD/xhtml-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" >
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<title>Strongtalk: Development  </title>
+	<link type="text/css" rel="stylesheet" href="common.css" />
+  </head>
+  <body>
+     <div id="all">
+  	<div id="top"> 
+		<div id="strongtalk">
+			<a href="index.html"><img src="images/logo.png"
+				border="0" alt="STRONGTALK" /> </a> 
+			<br />
+			<img src="images/motto.png" 
+				alt="Smalltalk... with a need for speed" />
+		</div>	
+	</div>
+
+	<div id="navigation">
+		<a href="index.html">Main</a><br />
+		<a href="downloads.html">Downloads</a><br />
+		<a href="faq.html">FAQ</a><br />
+		<a href="releasenotes.html">Release Notes</a><br />
+		<a href="discussion.html">Discussion</a><br />
+		<a href="development.html">Development</a><br />
+		<a href="history.html">History</a><br />
+		<a href="benchmarking.html">Benchmarking</a><br />
+		<a href="documents.html">Documents</a><br />
+	</div>
+
+	<div id="rest">
+	<h1>Development</h1>
+	<p>Until now, Strongtalk development has been quiescent, since the VM source code has been unavailable, athough many people have expressed interest in it. </p>
+	<p>Since the VM source has just become available, we are just starting to organize the open source development effort.  The goal is to propagate the innovations that Strongtalk contains into the hands of developers and end users, in whatever way works. </p>
+	<p>What form that takes depends to a large extent on you, the developer community.  This could take the form of a productized version of Strongtalk, or variants of it.  It could also take the form of adaptation of various parts of the technology to other languages or Smalltalk implementations.  Any or all of these are good- we just want to get these technologies out there.</p>
+<p>If you are a VM wizard, and you want to help get Strongtalk into a truly usable state, or if you are interested in borrowing technology for another Smalltalk implementation; now is the time to get involved, since things are just
+getting organized!  Don't hesitate to send email to <strong>strongtalk-owner</strong> at
+        the group <strong>yahoogroups.com.</strong>
+<p>Check back here over time for information as the development effort is fleshed out.</p>
+<h2>Development Goals</h2>
+<p>Below I (Dave Griswold) have tried to put together an initial rough outline of both the current status of the system, and a series of development steps that would bring Strongtalk closer to a production state.</p>
+<h3>Current Status</h3>
+<p>Strongtalk is currently in basically a pre-alpha release state.  It runs, and is moderately stable although there are still crashes.  The basic technology is fully working, but there are a variety of things needed in a production version that are not there yet.  The development stages below outline just the major tasks (off the top of my head) that would need to be undertaken for various definitions of "production quality".</p>
+<h3>Stage 1: Stable and Usable for single apps on Win32</h3>
+<ul>
+<li>VM stability: There are still a few VM crashes that need to be sorted out.</li>
+<li>Garbage Collector:  Currently, the 'full' GC doesn't run by itself; it has to be invoked explicitly (either from user code or from the Transcript menus).  This causes programs that create and tenure large amounts of garbage to eventually run out of memory and dump. So the GC needs to be set up to run automatically with some reasonable policy.</li>
+<li>Smalltalk Debugger: There is a command-line debugger in the system currently, but it is very far from the usability of a graphical Smalltalk debugger.  So a graphical debugger (perhaps a 'remotable' one) needs to be written.</li>
+<li>Code Cache Growth: Right now the compiled code area cannot grow.  The initialization file can be used to make it as big as you want, but it won't get any bigger.  We may be able to live without this, since the system actually generates an incredibly small amount of compiled code.  You have to work hard to get over 5MB of compiled code.  An idea for a quick workaround: just flush the code cache, and let the code reoptimize, whenever it fills up, deoptimizing any compiled stack frames.</li>
+</ul>
+<h3>Stage 2: Porting to other platforms</h3>
+<h3>Stage 3: Usable for long-running, multi-threaded, dynamic code-base applications</h3>
+<ul>
+<li>On-stack replacement:  Currently, when a running interpreted method is compiled, the compiled version is not run until the next time the method is called, because the machinery to convert an interpreted stack frame to a compiled stack frame while it is running is not there yet.  In most programs this is not even noticeable, but if a performance critical method runs only once, and then sits in a loop for a very long time, then the compiled version never gets used and you just get interpreted performance.  On-stack replacement is the fix for this.  We didn't have time to do this for Strongtalk, although it was done for Sun's Java HotSpot VM, which is based on the Strongtalk VM, so it is doable.</li>
+<li>Code-cache flushing:  Currently, obsolete compiled code just accumulates in the compiled code cache in memory.  As long as your program has a relatively 'steady-state' working set of compiled code, this is not a problem, but if a running program was constantly modifying performance-critical code, or  dynamically loading new programs over and over again, then eventually the code cache would fill up.  So old code needs to be flushed, and the code cached compacted.  The code cache size can be controlled from the VM options file, so that is a quick workaround for now.  In practice so far we have never seen more than just a few megabytes of compiled code, so this is far from being a problem (remember that the VM only compiles the performance critical 'hotspots' in your program).</li>
+<li>Multi-threaded VM:  This is probably the biggest challenge.  Strongtalk currently uses the standard Smalltalk nonpreemptive threading model, where
+Smalltalk processes do not run concurrently; 'yield' is used to yield control to another process.  That is fine for most applications, but there is a class of applications (mostly big server apps) that want full preemptive multithreading or multiprocessing.  This requires combing through the whole VM and making it thread-safe, a large, tricky task.
+</p>
+<p>For most uses, this is not really an issue, and in fact lack of preemptive multithreading makes programs more reliable, since reliable concurrent code is hideously hard to write.  Also, Strongtalk has one mitigating feature at the moment: Strongtalk processes map to native OS threads, and although only one can be running in Smalltalk code at a time, when a call out to native code is made, other threads are unblocked, so that a Smalltalk process that makes a blocking OS call does not prevent other Smalltalk processes from running, which is very handy.</p>
+</li>
+<li>Invocation counter decay: methods and blocks are instrumented in Strongtalk to count invocations; this is used to detect the hotspot code to compile.  Currently, these counters only increase, until over time more and more methods get compiled.  Counter decay is needed to reduce the value of the counters over time, so that time becomes a factor, rather than just all-time number of invocations.</li>
+</ul>
+<p>The above is just a 60,000 ft overview of the major missing pieces in Strongtalk.  There are lots more things to do, and I will try to flesh this wish-list out with input from others.  Also, this list at the moment focuses only on VM issues; there are plenty of Strongtalk library issues too.</p>
+	</div>
+     </div>
+  </body>
+</html>
