@@ -1,3 +1,22 @@
+h2 {	
+	color: black;
+	background-color: darkSeaGreen;
+	border-top: solid;
+	border-bottom: solid;
+	border-width: 1px;
+	border-color: dimGrey;
+	padding: 2px;
+	}
+h3 {	
+	color: white;
+	background-color: darkSeaGreen;
+	padding: 2px;
+	}
+h4 {  	border-top: solid;
+	border-bottom: solid;
+	border-width: 1px;
+	border-color: lightGrey;
+	}
 
 #all {	padding: 100;
 	margin-left: 540;
@@ -24,7 +43,7 @@
 	float: left;
 	}
 #navigation {
-	background-color: silver;
+	background-color: goldenrod;
 	float: left;
 	font-family: sans-serif;
 	font-style: bold;
