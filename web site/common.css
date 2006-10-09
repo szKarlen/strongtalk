@@ -1,5 +1,5 @@
 h2 {	
-	color: black;
+	color: darkSlateGrey;
 	background-color: darkSeaGreen;
 	border-top: solid;
 	border-bottom: solid;
@@ -57,6 +57,26 @@ h4 {  	border-top: solid;
 	border-right: solid;
 	border-width: 1px;
 	border-color: grey;
+	}
+#navigation a:link {
+	color: white;
+	font-weight: bold;
+	text-decoration: none;
+	}
+#navigation a:visited {
+	color: yellow;
+	font-weight: bold;
+	text-decoration: none;
+	}
+#navigation a:hover {
+	color: black;
+	font-weight: bold;
+	text-decoration: none;
+	}
+#navigation a:active {
+	color: yellow;
+	font-weight: bold;
+	text-decoration: none;
 	}
 
 #rest {
