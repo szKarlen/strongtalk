@@ -23,7 +23,7 @@ h4 {  	border-top: solid;
 	margin-right: 140;
 	border-bottom: solid;
 	border-width: 1px;
-	border-color: grey;
+	border-color: dimGrey;
 	}
 
 #top {
@@ -35,8 +35,8 @@ h4 {  	border-top: solid;
 	padding: 20px;
 
 	border-bottom: solid;
-	border-width: 2px;
-	border-color: grey;
+	border-width: 1px;
+	border-color: black;
 	}
 
 #strongtalk {
@@ -56,7 +56,7 @@ h4 {  	border-top: solid;
 	border-left: solid;
 	border-right: solid;
 	border-width: 1px;
-	border-color: grey;
+	border-color: dimGrey;
 	}
 #navigation a:link {
 	color: white;
