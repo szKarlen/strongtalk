@@ -1,15 +1,15 @@
 h2 {	
-	color: darkSlateGrey;
-	background-color: darkSeaGreen;
+	color: dimGray /*dimGray*/ /* darkSlateGrey*/;
+	background-color: white /*SteelBlue*/ /* darkSeaGreen */;
 	border-top: solid;
-	border-bottom: solid;
+	/* border-bottom: solid; */
 	border-width: 1px;
 	border-color: dimGrey;
 	padding: 2px;
 	}
 h3 {	
-	color: white;
-	background-color: darkSeaGreen;
+	color: dimGray;
+	background-color: Gainsboro /*cadetBlue */ /* darkSeaGreen */;
 	padding: 2px;
 	}
 h4 {  	border-top: solid;
