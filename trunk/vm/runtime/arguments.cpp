@@ -156,6 +156,18 @@ void parse_arguments(int argc, char* argv[]) {
       if (parse_files) {
         process_settings_file(argv[index]);
       }
+    } else if (strcmp(argv[index], "-script") == 0) {
+       // The script file name is read and processed by Smalltalk
+       // code, not here.  Here we just recognize it and skip over it.
+      index++;
+      if (index >= argc) {
+        fprintf(stderr, "file name expected after '-script'\n");
+	exit(-1);
+      }
+    } else if (strcmp(argv[index], "-benchmark") == 0) {
+	// signals to ignore the rest of the command line, which will be 
+	// interpreted by Smalltalk code as benchmark commands.
+	return;
     } else process_token(argv[index]);
   }
 }
