@@ -1,1 +1,1 @@
-  * [Virtual Machine Design Notes]
+  * [VMDesignNotes Virtual Machine Design Notes]
