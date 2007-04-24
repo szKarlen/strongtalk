@@ -1,1 +1,3 @@
   * [VMDesignNotes Virtual Machine Design Notes]
+    * [BasicTypesIntro Introduction to core VM types]
+  * [Building Building the VM executable]
