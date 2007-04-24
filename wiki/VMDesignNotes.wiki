@@ -1,5 +1,0 @@
-#summary Virtual Machine Design Notes
-
-  * [Building Building the System]
-  * [BasicTypesIntro Introduction to the Common C++ Types in the VM]
-  * [ObjectFormat Strongtalk Object Format]
