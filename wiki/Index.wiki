@@ -1,5 +1,1 @@
-#summary Index for the Strongtalk Wiki
-
-= Index =
-
   * [Virtual Machine Design Notes]
