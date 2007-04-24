@@ -1,4 +1,4 @@
-  * [VMDesignNotes Virtual Machine Design Notes]
+  * Virtual Machine Design Notes
     * [BasicTypesIntro Introduction to Core VM Types]
       * [VMTypesForSmalltalkObjects C++ objects related to accessing Smalltalk heap objects from C++]
     * [Tagging Strongtalk Object Tagging]
