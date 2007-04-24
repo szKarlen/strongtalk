@@ -27,7 +27,7 @@ The code that manages Oop-s is contained in the vm/oops directory.  The hierarch
 
 === *OopDesc*: Untagged Oops ===
 
-When addr() is used to detag an Oop, a subtype of (OopDesc *) is returned.  There is an appropriate OopDesc class for each Oop type defined in [http://strongtalk.googlecode.com/svn/trunk/vm/oops/oopsHierarchy.hpp oopsHierarchy.hpp].  The OopDesc hierarchy consists of C++ classes that map directly to the memory layout of Smalltalk objects.  This direct mapping allows the VM to be designed in a high-level, object-oriented fashion, unlike many other virtual machines, since the various kinds of Smalltalk objects can be directly manipulated through an abstract C++ interface.  
+When addr() is used to detag an Oop, a subtype of (OopDesc * ) is returned.  There is an appropriate OopDesc class for each Oop type defined in [http://strongtalk.googlecode.com/svn/trunk/vm/oops/oopsHierarchy.hpp oopsHierarchy.hpp].  The OopDesc hierarchy consists of C++ classes that map directly to the memory layout of Smalltalk objects.  This direct mapping allows the VM to be designed in a high-level, object-oriented fashion, unlike many other virtual machines, since the various kinds of Smalltalk objects can be directly manipulated through an abstract C++ interface.  
 
 === *Klass*: 
 
