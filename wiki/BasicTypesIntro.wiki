@@ -24,4 +24,4 @@ The above issues dictate that the C++ classes in the VM be divided into two majo
   * [VMTypesForSmalltalkObjects C++ objects related to accessing Smalltalk heap objects from C++]
   * [NonOopVMTypes Other VM objects that do not map to Smalltalk objects]
 
-[VMTypesForSmalltalkObjects Next]
+[VMTypesForSmalltalkObjects Next: C++ objects related to accessing Smalltalk heap objects from C++]
