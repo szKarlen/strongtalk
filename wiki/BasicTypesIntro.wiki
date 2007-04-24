@@ -24,4 +24,30 @@ The above issues dictate that the C++ classes in the VM be divided into two majo
   * [VMTypesForSmalltalkObjects C++ objects related to accessing Smalltalk heap objects from C++]
   * [NonOopVMTypes Other VM objects that do not map to Smalltalk objects]
 
+Let's start with the simpler case: 
+
+=== VM objects not related to mapping to Smalltalk objects ===
+
+All classes in the virtual machine (other than the classes in the OopDesc hierarchy and related classes, that map to the Smalltalk heap) must be subclasses of one of the following allocation classes:
+
+  * For objects allocated in the resource area:
+    * ResourceObj
+      * PrintableResourceObj
+
+  * For objects allocated in the C-heap (managed by: free & malloc):
+    * CHeapObj
+      * PrintableCHeapObj
+
+  * For objects allocated on the stack:
+    * StackObj
+      * PrintableStackObj
+
+  * For embedded objects:
+    * ValueObj
+
+  * For classes used as name spaces:
+    * AllStatic
+
+The printable subclasses are used for debugging and define virtual member functions for printing. Classes that avoid allocating the vtbl entries in the objects should therefore not inherit from the printable subclasses
+
 [VMTypesForSmalltalkObjects Next: C++ objects related to accessing Smalltalk heap objects from C++]
