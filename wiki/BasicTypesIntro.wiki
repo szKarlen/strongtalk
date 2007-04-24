@@ -1,22 +1,48 @@
 #summary Introduction to the Common C++ Types in the VM
 
-= Introduction =
+== Introduction ==
 
 The Strongtalk virtual machine is a large, complex C++ program.  To manage that complexity, the VM design is based around the highly structured use of a number of core C++ classes and coding techniques, which you will see used over and over again in the code.  Much of this basic structure is inherited from the Self virtual machine design.  To understand the VM design, it is first necessary to understand the use of these core classes.
 
-= Smalltalk vs. C++ objects =
+The fundamental difficulty in designing a high-performance virtual machine is caused by the conflict between the need for an abstract, high-level coding style to manage the VM complexity, with the requirement that the resulting code be very fast.  The Strongtalk VM accomplishes this through extensive use of C++ inline functions, preprocessor macros, and optimized allocation of VM objects (i.e. avoiding the C heap when possible).   While inline functions and macros certainly can make debugging more difficult, they nonetheless are indispensable in allowing the Strongtalk VM design to be very high-level and abstract without sacrificing performance.
+
+=== Smalltalk vs. C++ objects ===
 
 First of all, we need to deal with a fundamental ambiguity: when we say object or class, are we talking about C++ objects/classes in the VM code, or are we talking about Smalltalk objects that the VM is simulating?  So it is necessary to be clear about the distinction.  In the Strongtalk VM, a fair amount of effort has been made to map Smalltalk objects into C++ objects, so that the VM can operate on the simulated objects in a natural and object-oriented way.
 
-As you read try to understand why the VM classes are structured the way they are, try to keep in mind that there are a number of fundamental issues:
+When trying to understand why the VM classes are structured the way they are, try to keep in mind a number of fundamental issues:
 
-  * *Allocation* Smalltalk objects are always allocated in the garbage-collected heap, whereas C++ objects are generally allocated elsewhere, either on the C heap, the stack, or in one of a number special areas used by the VM.  Two of the most important are:
-    * The *Resource Area*: temporary C++ objects that cannot be stack allocated but which are only needed until the end of the current VM operation are allocated in the Resource area, which is a special chunk of contiguous memory that is tail-allocated for very high allocation speed.  When the current VM operation completes, the end-pointer for the allocation area is simply reset to the beginning, instantly freeing all resource objects.   However, note that such objects will *not* have their destructors called, so destructors are not used for objects in the resource area.
+  * *Allocation*: Smalltalk objects are always allocated in the garbage-collected heap, whereas C++ objects are generally allocated elsewhere, either on the C heap, the stack, or in one of a number special areas used by the VM.  Two of the most important of these other areas are:
+    * The *Resource Area*: Temporary C++ objects that cannot be stack allocated but which are only needed until the end of the current VM operation are allocated in the Resource area, which is a special chunk of contiguous memory that is tail-allocated for very high allocation speed.  When the current VM operation completes, the end-pointer for the allocation area is simply reset to the beginning, instantly freeing all resource objects.   However, note that such objects will *not* have their destructors called, so destructors are not used for classes whose instances will be allocated in the resource area.
     * The *Zone*: The zone is used to hold compiled code objects.
   * *Write Barrier*: Since Smalltalk objects are managed by a generational garbage collector that uses card-marking, all stores of Smalltalk references into Smalltalk object fields _must_ be recorded for the garbage collector.
-  * *GC relocation*: care must be taken that VM references to objects on the garbage collected heap must not be maintained across a garbage collection, since they may be relocated, invalidating the reference.
+  * *GC relocation*: Care must be taken to make sure that VM references to objects on the garbage-collected heap are not be maintained across a garbage collection, since they may be relocated, invalidating the reference.
   * *Dispatch*: Smalltalk objects have a different dispatch model and header format than C++ objects.  Because there is no vtable in the Smalltalk object header, C++ objects that map to Smalltalk objects cannot contain virtual functions.  This issue will be discussed more below. 
 
-= Oop-s: Smalltalk Object References =
+=== *Oop*: Smalltalk Object Reference ===
 
-In Strongtalk VM terminology, an Oop (Object Oriented Pointer) is a *tagged* reference to a Smalltalk object.  
+In Strongtalk VM terminology, an _Oop_ (Object Oriented Pointer) is a [Tagging _tagged_] reference to a Smalltalk object.  The tag prevents the Oop from being directly dereferenced in C++.  To dereference an Oop, the addr() function is used; since Oops are pointer types, this very frequent operation looks like _oop_->addr().  The addr() function will remove the tagging information if necessary and return a usable C++ object pointer.
+ 
+The code that manages Oop-s is contained in the vm/oops directory.  The hierarchy of Oop types (and their associated OopDesc classes, described below) is outlined in [http://strongtalk.googlecode.com/svn/trunk/vm/oops/oopsHierarchy.hpp oopsHierarchy.hpp].
+
+=== *OopDesc*: Untagged Oops ===
+
+When addr() is used to detag an Oop, a subtype of (OopDesc *) is returned.  There is an appropriate OopDesc class for each Oop type defined in [http://strongtalk.googlecode.com/svn/trunk/vm/oops/oopsHierarchy.hpp oopsHierarchy.hpp].  The OopDesc hierarchy consists of C++ classes that map directly to the memory layout of Smalltalk objects.  This direct mapping allows the VM to be designed in a high-level, object-oriented fashion, unlike many other virtual machines, since the various kinds of Smalltalk objects can be directly manipulated through an abstract C++ interface.  
+
+=== *Klass*: 
+
+However, there is a catch to this approach: since an OopDesc is an overlay on the actual Smalltalk object structure, it has a Smalltalk object header, rather than a C++ object header (i.e. the vtable).  Since the C++ vtable field is necessary for dispatching C++ virtual functions, this means that OopDesc classes _cannot_ contain virtual methods.
+
+Since lack of virtual methods would severely restrict the usefulness of these C++ classes, a work-around for this has been provided.  One obvious solution to this problem would be to simply allocate a vtable field in every Smalltalk object.  But this would be an unacceptable space overhead, since most Smalltalk objects have only a couple of instance variables and two header words, meaning that addition of even one more word to every object would considerably increase the size of the Smalltalk heap, and increase memory subsystem pressure.
+
+As a more reasonable alternative, Smalltalk objects have a Smalltalk class that is shared across all instances, so the Smalltalk class is an obvious place to locate a C++ vtable that could be used to delegate instance dispatch.  However, Smalltalk classes are also regular Smalltalk objects, so they too have only a Smalltalk header.  So where could a C++ vtable be stored?  
+
+The Strongtalk VM does this by imbedding a C++ Klass object (named with a K to avoid conflict with reserved words) in the Smalltalk class structure, which is a KlassOopDesc.  Unlike OopDesc-s, Klass-es _do_ have a vtable entry, and thus the Klass hierarchy can contain virtual methods.   When a virtual function on an *OopDesc class needs to be defined, it is defined instead on the associated *Klass class, and then an inlined non-virtual function is defined on the OopDesc that delegates to the virtual function on the Klass.  
+
+So to reiterate: each Smalltalk class object maps directly to a C++ KlassOopDesc (or subclass), which like other OopDesc-s does not have a vtable.  But the KlassOopDesc contains as its body an imbedded Klass C++ object, which is _not_ an OopDesc, so it may have a C++ vtable.  So basically KlassOopDesc simply acts as the Smalltalk wrapper for a full C++ Klass object.
+
+In practice what this means in terms of the actual object structure is that each Smalltalk class object has an imbedded C++ vtable field directly after the Smalltalk object header.  
+
+This brings up an additional issue that illustrates the advantages of the Strongtalk VM design: since the Klass vtable is an untagged value that is _not_ an Oop, but is imbedded in the Smalltalk heap, it must be known to the garbage collector as a non-Oop, so that it is not accidentally treated as a Smalltalk object reference.  This illustrates that while most fields in Smalltalk objects are Oops, some internal fields are not.
+
+In most VMs this would introduce additional complexity into the garbage collector, since it would have to know the intimate details about the structure of all the kinds of Smalltalk object layout (regular objects, doubles, classes, arrays, bytearrays, etc) to know how to locate the oops during pointer traversal.  But since as we have shown we have a method of indirectly defining virtual functions on the OopDesc classes for each object type, we can simply design the garbage collector in an object-oriented fashion, so that each OopDesc class can define a virtual method for enumerating its imbedded Oops for the garbage collector.  This makes the garbage collector independent of the detailed structure of the various object types, and makes it easy to add or modify internal VM non-oop fields in Smalltalk objects.
