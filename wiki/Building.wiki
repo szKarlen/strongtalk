@@ -1,0 +1,4 @@
+#summary Building the Virtual Machine
+
+
+At the moment the documentation on how to build the VM is in [http://strongtalk.googlecode.com/svn/trunk/README.txt readme.txt] in the repository.
