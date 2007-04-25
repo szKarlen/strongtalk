@@ -1,4 +1,12 @@
 #summary Building the Virtual Machine
 
 
-At the moment the documentation on how to build the VM is in [http://strongtalk.googlecode.com/svn/trunk/README.txt readme.txt] in the repository.
+At the moment the bulk of the documentation on how to build the VM is in [http://strongtalk.googlecode.com/svn/trunk/README.txt readme.txt] in the repository.
+
+A few bits of additional information follow.
+
+  * *Building prims.inc*:  The virtual machine has an extensive set of primitive operations.  To ease the process of creating these and to allow the Smalltalk side to gain knowledge of the types of the primitives, a special source file vm/prims/prims.src is used.  It contains specifications for each primitive operation, including Strongtalk type information.  The Strongtalk class DeltaPrimitiveGenerator is used to build the C++ include file vm/prims/prims.inc from prims.src.  The final prims.src file must also be copied to the startup directory for Strongtalk, so that the typechecker can read the type information that allows primitive calls to be typechecked.  
+    * To run the primitive generator, first make sure that a copy of prims.src is in the startup directory.
+    * Run Strongtalk
+    * Evaluate "DeltaPrimitiveGenerator doit"
+    * The file prims.inc is produced in the startup directory.  It should be copied to the vm/prims directory.
