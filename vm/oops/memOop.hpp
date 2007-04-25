@@ -36,7 +36,7 @@ class memOopDesc: public oopDesc {
   klassOop _klass_field;		// the receiver's class
   
  public:
-  // returns the header size of a memOop
+  // returns the header size (number of words, not number of bytes) of a memOop
   static int header_size()		{ return sizeof(memOopDesc)/oopSize; }
 
   // field offsets for code generation
