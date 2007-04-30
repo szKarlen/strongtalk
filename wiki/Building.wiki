@@ -35,9 +35,11 @@ As you can see, a macro (PRIM_DECL_2) is used to define the entry point itself. 
 
 ===== Generating prims.src =====
 
-To extract information in the source code, the tool primdeffilter  is used.  It parses the .hpp files, and produces a file called prims.src.  Unfortunately, the primdeffilter program has been lost in the mists of time, although I believe it's very simple, and could be rewritten as a script without much effort.  Fortunately, primitives are not added very frequently, so for now, hand-updating prims.src  is not a big deal.
+To extract information in the source code, the tool primdeffilter  is used.  It parses the .hpp files, and produces a file called prims.src.  
 
-The prims.src file basically just contains the special annotations from the source code comments, collated from all the primitive declarations, delimited by lines beginning with '!'.
+Unfortunately, the primdeffilter program has been lost in the mists of time, although I believe it's very simple, and could be rewritten as a script without much effort.  Basically, all primdeffilter does is find the comments  that start with '//%prim', and extract the special syntax (stripping off the '//'s) up to a comment starting with '//%', into the prims.src file, terminating each entry with a line containing only '!'.  The end of the file is indicated by another line containing only '!'.    This script needs to be rewritten (hint hint).
+
+Fortunately, primitives are not added or changed very frequently, so for now, hand-updating prims.src  is not a big deal.
 
 ===== Generating prims.inc =====
 
