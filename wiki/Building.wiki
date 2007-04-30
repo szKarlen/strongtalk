@@ -5,8 +5,46 @@ At the moment the bulk of the documentation on how to build the VM is in [http:/
 
 A few bits of additional information follow.
 
-  * *Building prims.inc*:  The virtual machine has an extensive set of primitive operations.  To ease the process of creating these and to allow the Smalltalk side to gain knowledge of the types of the primitives, a special source file vm/prims/prims.src is used.  It contains specifications for each primitive operation, including Strongtalk type information.  The Strongtalk class !DeltaPrimitiveGenerator is used to build the C++ include file vm/prims/prims.inc from prims.src.  The final prims.src file must also be copied to the startup directory for Strongtalk, so that the typechecker can read the type information that allows primitive calls to be typechecked.  
-    * To run the primitive generator, first make sure that a copy of prims.src is in the startup directory.
-    * Run Strongtalk
-    * Evaluate "!DeltaPrimitiveGenerator doit"
-    * The file prims.inc is produced in the startup directory.  It should be copied to the vm/prims directory.
+==== Building information on the primitives (prims.src and prims.inc) ====
+
+The virtual machine has an extensive set of Smalltalk/Strongtalk primitive operations.  Information about these primitives is needed by the VM and by the Smalltalk-side code for several reasons:
+
+  * The bytecode compiler needs to know the structure of the primitives so that primitive calls (which are in-line expressions in Strongtalk, unlike other Smalltalks) can be correctly compiled.
+  * Similarly, the typechecker needs to know the type signatures of the primitives, so the calls can be typechecked (although that is an optional operation).
+
+Rather than require this information to be separately and redundantly maintained for each primitive, Strongtalk has facilities for automatically extracting and generating the necessary information from the primitive source code.  
+
+The primitive information is dealt with as follows:
+
+===== The primitive source code =====
+
+In the C++ source code, the primitives are defined in include files in the vm/prims directory.  Here is an example from double_prims.hpp:
+
+{{{
+  //%prim
+  // <Float> primitiveFloatLessThan:  aNumber   <Float>
+  //                         ifFail: failBlock <PrimFailBlock> ^<Boolean> =
+  //   Internal { doc   = 'Returns whether the receiver is less than the argument'
+  //              flags = #(Pure DoubleCompare LastDeltaFrameNotNeeded)
+  //              name  = 'doubleOopPrimitives::lessThan' }
+  //%
+  static PRIM_DECL_2(lessThan, oop receiver, oop argument);
+}}}
+
+As you can see, a macro (PRIM_DECL_2) is used to define the entry point itself.  The additional information necessary is put in a special syntax in the associated comment.  
+
+===== Generating prims.src =====
+
+To extract information in the source code, the tool primdeffilter  is used.  It parses the .hpp files, and produces a file called prims.src.  Unfortunately, the primdeffilter program has been lost in the mists of time, although I believe it's very simple, and could be rewritten as a script without much effort.  Fortunately, primitives are not added very frequently, so for now, hand-updating prims.src  is not a big deal.
+
+The prims.src file basically just contains the special annotations from the source code comments, collated from all the primitive declarations, delimited by lines beginning with '!'.
+
+===== Generating prims.inc =====
+
+Once the primitive annotations have been extracted or hand-entered into prims.inc, a Strongtalk tool, DeltaPrimitiveGenerator, is used to parse that and produce the prims.inc file.
+
+To run this tool, you must place the prims.src file in the in the startup directory for Strongtalk, run Strongtalk, and evaluate 'DeltaPrimitiveGenerator doit'.  This will generate prims.inc in that same directory.  prims.inc should then be moved to the vm/prims directory.
+
+
+
+
