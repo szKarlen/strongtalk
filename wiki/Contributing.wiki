@@ -2,14 +2,14 @@
 
 == Joining the project ==
 
-Before you can contribute code to the project, edit the wiki etc., you must be a member of the project.  To become a member of the project, you will need to add your name to the Strongtalk license.
+Before you can contribute code to the project, edit the Wiki etc., you must be a member of the project.  To become a member of the project, you will need to add your name to the Strongtalk license.  You will also need a Google gmail account, since Google Code uses gmail account names for member identification.
 
 === Adding your name to the Strongtalk license ===
 
 In the source repository, there is a file at the top level (under trunk) called contributorLicenses.html. That file contains the simple legal boilerplate that each contributor will have to agree to, which is necessary to avoid copyright and patent
 problems.
 
-To add your name to this license, use subversion to checkout/copy constributorLicenses.html, and add a line at the end with your name, email address (and company name, ONLY if the contribution is being made on behalf of a company and you have permission to give a license).
+To add your name to this license, use subversion to checkout/copy constributorLicenses.html, and add a line at the end with your name, email (gmail!) address (and company name, ONLY if the contribution is being made on behalf of a company and you have permission to give a license).
 
 Once you have added your agreement to the end of the file, submit the
 file to the Google group Strongtalk-commit (as an attachment please,
