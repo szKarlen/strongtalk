@@ -154,7 +154,7 @@ void parse_arguments(int argc, char* argv[]) {
 	exit(-1);
       }
       if (parse_files) {
-        process_settings_file(argv[index]);
+        process_settings_file(argv[index], true);
       }
     } else if (strcmp(argv[index], "-script") == 0) {
        // The script file name is read and processed by Smalltalk
