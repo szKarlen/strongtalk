@@ -222,12 +222,13 @@ runDefaultProgram
 
 runScript: filename <Str>
 
-	| file <FilePath> |
-	file := FilePath for: filename.
-	file exists
-		ifFalse: [	Transcript show: 'Error: script file ''', filename, ''' not found.'; cr.
-						^self	].
-	file charInputStream fileIn! !
+	[	| file <FilePath> |
+		file := FilePath for: filename.
+		file exists
+			ifFalse: [	Transcript show: 'Error: script file ''', filename, ''' not found.'; cr.
+							^self	].
+		file charInputStream fileIn
+	] fork! !
 
 ! (Delta mirrorFor: #SystemInitializer) classSide methodsFor: 'library class initialization' !
 
