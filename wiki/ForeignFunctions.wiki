@@ -1,6 +1,6 @@
 #summary Foreign Function Interface
 
-Calling foreign functions from within Strongtalk is very simple and natural.
+Strongtalk supports both calling out to foreign functions, and callbacks into Smalltalk from foreign functions, in a simple and natural way.  Smalltalk and foreign code may be mixed on the stack arbitrarily; i.e. callouts can call callbacks which can callout, et cetera.
 
 == ExternalProxy ==
 
@@ -52,8 +52,6 @@ There are several things to note:
 
 == Callbacks ==
 
-Strongtalk also supports callbacks from external code into Strongtalk; Smalltalk and external code maybe mixed arbitrarily on the stack.
-
 Callbacks also are very simple.  In effect, all you do is register a block with the VM, which allocates an corresponding external function, which is represented in Smalltalk as an instance of a subclass of Callback, which is itself a subclass of ExternalProxy.   You can pass the callback to external code.  When the external function is called, the block is invoked.
 
 Callback currently has two subclasses, CCallBack, which uses normal C calling conventions, and APICallBack, which uses Pascal calling conventions, which are needed for Win32 event handlers, for example.
@@ -76,6 +74,5 @@ wndProc ^<APICallBack>
                         with: ExternalProxy with: SmallInteger with: ExternalProxy with: ExternalProxy).	].
     ^WndProc
 }}}
-
 
 
