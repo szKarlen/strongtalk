@@ -8,4 +8,5 @@
     * [ObjectFormat Strongtalk Object Memory Format]
   * [Building Building the VM Executable]
   * [http://tunes.org/~water/strongtalk/vm-doc/ Automated VM documentation] An interim copy generated using DOxygen, thanks to Brian Rice
-
+  * Strongtalk/Smalltalk level documentation
+    *[ForeignFunctions Foreign Function Interface]
