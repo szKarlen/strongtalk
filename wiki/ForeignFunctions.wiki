@@ -2,7 +2,7 @@
 
 Strongtalk supports both calling out to foreign functions, and callbacks into Smalltalk from foreign functions, in a simple and natural way.  Smalltalk and foreign code may be mixed on the stack arbitrarily; i.e. callouts can call callbacks which can callout, et cetera.
 
-== `ExternalProxy` ==
+== ExternalProxy ==
 
 The critical data type needed for interaction with external libraries is a way to encapsulate an unsigned, untagged word.  This is modeled by the class `ExternalProxy`.  Instances of `ExternalProxy` (or a subclass; using this class has a mixin does not work currently) are "magic" to the VM, in that they have a hidden, unsigned, untagged word instance variable.  There is a rich variety of access methods defined in `ExternalProxy` for setting and getting that word via standard Smalltalk basic types such a `SmallInteger`, and `Boolean`.  
 
@@ -74,5 +74,4 @@ wndProc ^<APICallBack>
                         with: ExternalProxy with: SmallInteger with: ExternalProxy with: ExternalProxy).	].
     ^WndProc
 }}}
-
 
