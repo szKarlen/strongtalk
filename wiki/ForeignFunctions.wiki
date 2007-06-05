@@ -53,7 +53,7 @@ There are several things to note:
 
 == Callbacks ==
 
-Callbacks also are very simple.  In effect, all you do is register a block with the VM, which allocates a corresponding external function, which is represented in Smalltalk as an instance of a subclass of `Callback`, which is itself a subclass of `ExternalProxy`.   You can pass the callback to external code.  When the external function is called, the block is invoked.
+Callbacks also are very simple.  In effect, all you do is register a block with the VM, which allocates a corresponding external function, which is represented in Smalltalk as an instance of a subclass of `Callback`, which is a kind of `ExternalProxy`.   You can pass the callback to external code.  When the external function is called, the block is invoked.
 
 `Callback` currently has two subclasses, `CCallBack`, which uses normal C calling conventions, and `APICallBack`, which uses Pascal calling conventions, which are needed for Win32 event handlers, for example.
 
