@@ -77,4 +77,4 @@ wndProc ^<APICallBack>
 }}}
 
 Notes:
-  * The type `ExternalData` used above is defined as (ExternalProxy | SmallInteger).
+  * The type `ExternalData` used above is defined as `(ExternalProxy | SmallInteger)`.
