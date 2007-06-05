@@ -4,7 +4,7 @@ Strongtalk supports both calling out to foreign functions, and callbacks into Sm
 
 == ExternalProxy ==
 
-The critical data type needed for interaction with external libraries is a way to encapsulate an unsigned, untagged word.  This is modeled by the class `ExternalProxy`.  Instances of `ExternalProxy` (or a subclass; using this class has a mixin does not work currently) are "magic" to the VM, in that they have a hidden, unsigned, untagged word instance variable.  There is a rich variety of access methods defined in `ExternalProxy` for setting and getting that word via standard Smalltalk basic types such as `SmallInteger`, and `Boolean`.  
+The critical data type needed for interaction with external libraries is a way to encapsulate an unsigned, untagged word.  This is modeled by the class `ExternalProxy`.  Instances of `ExternalProxy` (or a subclass; using this class as a mixin does not work currently) are "magic" to the VM, in that they have a hidden, unsigned, untagged word instance variable.  There is a rich variety of access methods defined in `ExternalProxy` for setting and getting that word via standard Smalltalk basic types such as `SmallInteger`, and `Boolean`.  
 
 When the word represents a pointer, there are convenient methods for allocating and freeing on the C heap, as well as methods for indexing into it as an array, whether by byte, word, or double byte.
 
@@ -48,7 +48,7 @@ There are several things to note:
   * Note the use of `CString` to allocate a C string for the Smalltalk string, and the use of an #ensure: clause to guarantee that it is freed on return.  #ensure: should always be used when allocating temporary external memory, to prevent memory leaks.  For example, here the string would not otherwise be freed if the return value was NULL.
   * Note that the argument keywords improve readability considerably, although they have no semantic content.
   * Note the use of arbitrary expressions as arguments, yielding both `ExternalProxies` and `SmallIntegers` as needed.
-  * Note that ExternalProxy defines convenient methods like #externalBitOr: and #externalBitAnd: to do boolean operations on unsigned, untagged words.
+  * Note that `ExternalProxy` defines convenient methods like #externalBitOr: and #externalBitAnd: to do boolean operations on unsigned, untagged words.
   * By convention, external constants should be defined elsewhere as constant methods; in this case the class Win32 is used for Win32 constants.  This helps readability considerably.  Note that the Strongtalk compiler will in-line all such sends to literal classes- they are in effect free at equilibrium.
 
 == Callbacks ==
@@ -75,3 +75,6 @@ wndProc ^<APICallBack>
                         with: ExternalProxy with: SmallInteger with: ExternalProxy with: ExternalProxy).	].
     ^WndProc
 }}}
+
+Notes:
+  * The type `ExternalData` used above is defined as (ExternalProxy | SmallInteger).
