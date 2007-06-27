@@ -20,5 +20,4 @@
 
 == Other Issues to Investigate ==
 
-    
-
+  * [SqueakVMNotes Relevant Notes on the Squeak VM Architecture]
