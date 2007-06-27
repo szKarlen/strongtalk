@@ -1,0 +1,24 @@
+#summary Collaborative notes on a preliminary port of the Squeak image to the Strongtalk VM
+
+== Possible Approaches ==
+
+  # Emulation of the Squeak VM
+  # Porting the Smalltalk code
+    # Minimal: changing 
+
+== Differences to Investigate in the Language Models or VM Interface/Architecture ==
+  * Language Model
+    * Traits vs. Mixins?
+    * Namespaces?
+    * Lack of class instance variables in Strongtalk
+    * differences in closure support: 
+  * VM
+    * support for #become:, use of Obsolete classes in Squeak?
+    * plugins
+    * process model
+    * Does Strongtalk VM have enough reflective facilities now to support debugger?
+
+== Other Issues to Investigate ==
+
+    
+
