@@ -13,17 +13,17 @@ Use and distribution of this software is subject to the terms of the attached so
 ! (Delta mirrorFor: #MINMAXINFO) methodsFor: 'accessing' !
 
 
-ptMaxSize ^<WinPOINT>
+ptMaxSize ^<POINT>
 
-	^self subProxyAt: self ptMaxSizeOffset result: WinPOINT new!
+	^self subProxyAt: self ptMaxSizeOffset result: POINT new!
 
-ptMaxTrackSize ^<WinPOINT>
+ptMaxTrackSize ^<POINT>
 
-	^self subProxyAt: self ptMaxTrackSizeOffset result: WinPOINT new!
+	^self subProxyAt: self ptMaxTrackSizeOffset result: POINT new!
 
-ptMinTrackSize ^<WinPOINT>
+ptMinTrackSize ^<POINT>
 
-	^self subProxyAt: self ptMinTrackSizeOffset result: WinPOINT new!
+	^self subProxyAt: self ptMinTrackSizeOffset result: POINT new!
 
 structureSize ^<Int>
 

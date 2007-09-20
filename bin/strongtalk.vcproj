@@ -807,11 +807,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\vm\utilities\eventLog.cpp"
+				RelativePath="..\vm\utilities\eventlog.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\vm\utilities\eventLog.hpp"
+				RelativePath="..\vm\utilities\eventlog.hpp"
 				>
 			</File>
 			<File
