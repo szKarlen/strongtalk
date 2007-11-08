@@ -24,9 +24,8 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 # include <string.h>
 
 /*
-  All classes in the virtual machine (other than classes in the OopDesc hierarchy and
-  related classes, that map to the Smalltalk heap) must be subclasses
-  of one of the following allocation classes:
+  All classes in the virtual machine must be subclassed
+  by one of the following allocation classes:
 
    "For objects allocated in the resource area."
    - ResourceObj
@@ -48,8 +47,7 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 
    "The printable subclasses are used for debugging and define virtual
     member functions for printing. Classes that avoid allocating the
-    vtbl entries in the objects should therefore not inherit from
-    the printable subclasses"
+    vtbl entries in the objects should therefore not the printable subclasses"
 */
 
 // base class ResourceObj follows at the end of the file because it uses ResourceArea

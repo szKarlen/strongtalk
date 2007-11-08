@@ -16,6 +16,65 @@ Keywords: %machdep  %User
 Use and distribution of this software is subject to the terms of the attached source license.   $Revision: 1.4 $
 '!
 
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'platform classes' !
+
+
+pathClass ^<FilePath class>
+
+	^Win32FilePath!
+
+patternClass ^<FilePattern class>
+
+	^Win32FilePattern! !
+
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'testing' !
+
+
+usesCrLfConvention ^<Boolean>
+
+	^true! !
+
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'constants' !
+
+
+multipleMatchWildcardCharacter ^<Character>
+
+	^$*!
+
+singleMatchWildcardCharacter ^<Character>
+
+	^$?!
+
+wordSize ^<Int>
+	^4! !
+
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'command line' !
+
+
+getArguments ^<OrdCltn[Str]>
+
+	| line <Str> args <VarOrdCltn[Str]> strm <CharInputStream> |
+	line := self getCommandLine.
+	args := OrderedCollection[Str] new.
+	strm := line readStream.
+
+	[	"skip whitespace"
+		[ strm atEnd not and: [ strm peekFor: Character space] ] whileTrue.
+		strm atEnd ] whileFalse: [
+			args addLast: (self parseArgFrom: strm).		].
+	^args!
+
+getCommandLine
+	| p size result |
+	p := {{<kernel ExternalProxy GetCommandLineA>getCommandLine}}.
+	size := 0.
+	[(p byteAt: size) == 0] whileFalse: [ size := size + 1 ].
+	result := String new: size.
+	1 to: size do: [:index |
+       result at: index put: (Character value: (p byteAt: index - 1))
+	].
+	^result! !
+
 ! (Delta mirrorFor: #Platform) classSide methodsFor: 'Dynamic Linked Libraries' !
 
 
@@ -48,6 +107,65 @@ DLLMapName: name <Str> ^<Str>
 	name = 'kernel'		ifTrue: [^'KERNEL32.DLL'].
 	name = 'comdlg'		ifTrue: [^'COMDLG32.DLL'].
 	self error: 'Mapping ', name, ' not found'! !
+
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'initialization' !
+
+
+initialize
+
+	self DLLInitialize! !
+
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'os streams' !
+
+
+errorStream ^<CharOutputStream>
+
+	ErrorStream isNil
+		ifTrue: [	ErrorStream := TempTranscript new ].
+	^ErrorStream! !
+
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'environment' !
+
+
+environmentVariableAt: key <Str> ifAbsent: blk <[^X def]> ^ <Str | X>
+
+	| cKey <CString> cValue <CString> size <Int> cSize <ExternalProxy> result <Str> done <Boolean> found <Boolean> |
+	size := 1024.
+	cKey := CString for: key.
+	done := false.
+	[ done ] whileFalse: [
+		cValue := CString for: (String new: size).
+		cSize := {{<kernel ExternalProxy GetEnvironmentVariableA> key: cKey buffer: cValue bufSize: size}}.
+		cSize asSmallInteger > size
+			ifTrue: [	cValue free.													"Buffer size too small for value of variable"
+							size := cSize asSmallInteger ]
+			ifFalse: [	done := true.													"Buffer size ok, check if variable was found"
+							(found := cSize asSmallInteger ~= 0)
+								ifTrue: [ result := cValue asString ] ] ].
+	cKey free. 
+	cValue free.
+	^found
+		ifTrue: [ result ]
+		ifFalse: blk ! !
+
+! (Delta mirrorFor: #Platform) classSide methodsFor: 'private-clipboard access' !
+
+
+closeClipboard
+
+	{{<user ExternalProxy CloseClipboard> call}}!
+
+emptyClipboard
+
+	{{<user ExternalProxy EmptyClipboard> call}} asBoolean
+		ifFalse: [ Win32 handleError ].
+!
+
+openClipboard
+
+	{{<user ExternalProxy OpenClipboard> hnd: Win32 NULL}} asBoolean
+		ifFalse: [ Win32 handleError ].
+! !
 
 ! (Delta mirrorFor: #Platform) classSide methodsFor: 'clipboard access' !
 
@@ -107,146 +225,13 @@ clipboardTextIfAbsent: blk <[^X def]> ^<Str | X>
 	] ensure:
 		[ self closeClipboard ]! !
 
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'command line' !
-
-
-commandLine ^<Str>
-	| p size result |
-	p := {{<kernel ExternalProxy GetCommandLineA>getCommandLine}}.
-	size := 0.
-	[(p byteAt: size) == 0] whileFalse: [ size := size + 1 ].
-	result := String new: size.
-	1 to: size do: [:index |
-       result at: index put: (Character value: (p byteAt: index - 1))
-	].
-	^result!
-
-commandLineTokens ^<InputStream[Str]>
-	"a stream of the input line tokens.  Tokens are sequences separated by whitespace; whitespace can be 
-		included in a token by double quoting the arg.  (quotes can be imbedded by doubling, as with Smalltalk strings;
-		the returned token has delimiting quotes removed and internal quotes undoubled. "
-
-	| cstrm <CharInputStream> |
-	cstrm := self commandLine readStream.
-	self skipSpacesIn: cstrm.
-	^CustomInputStream[Str] new
-			nextBlock: [	self parseArgFrom: cstrm ];
-			atEndBlock: [ cstrm atEnd ].! !
-
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'constants' !
-
-
-multipleMatchWildcardCharacter ^<Character>
-
-	^$*!
-
-singleMatchWildcardCharacter ^<Character>
-
-	^$?!
-
-wordSize ^<Int>
-	^4! !
-
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'environment' !
-
-
-environmentVariableAt: key <Str> ifAbsent: blk <[^X def]> ^ <Str | X>
-
-	| cKey <CString> cValue <CString> size <Int> cSize <ExternalProxy> result <Str> done <Boolean> found <Boolean> |
-	size := 1024.
-	cKey := CString for: key.
-	done := false.
-	[ done ] whileFalse: [
-		cValue := CString for: (String new: size).
-		cSize := {{<kernel ExternalProxy GetEnvironmentVariableA> key: cKey buffer: cValue bufSize: size}}.
-		cSize asSmallInteger > size
-			ifTrue: [	cValue free.													"Buffer size too small for value of variable"
-							size := cSize asSmallInteger ]
-			ifFalse: [	done := true.													"Buffer size ok, check if variable was found"
-							(found := cSize asSmallInteger ~= 0)
-								ifTrue: [ result := cValue asString ] ] ].
-	cKey free. 
-	cValue free.
-	^found
-		ifTrue: [ result ]
-		ifFalse: blk ! !
-
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'initialization' !
-
-
-initialize
-
-	self DLLInitialize! !
-
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'os streams' !
-
-
-errorStream ^<CharOutputStream>
-
-	ErrorStream isNil
-		ifTrue: [	ErrorStream := TempTranscript new ].
-	^ErrorStream! !
-
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'platform classes' !
-
-
-pathClass ^<FilePath class>
-
-	^Win32FilePath!
-
-patternClass ^<FilePattern class>
-
-	^Win32FilePattern! !
-
 ! (Delta mirrorFor: #Platform) classSide methodsFor: 'private' !
 
 
 parseArgFrom: strm <CharInputStream>  ^<Str>
-	"Parse an argument token from the strm.  Leading whitespace is assumed to have been removed already.
-	  Any whitespace following the token is consumed."
 
-	| arg <Str> |
-	(strm peekFor: $")
-		ifTrue: [		| c <Character> buf <CharWriteStream> |
-						buf := String new writeStream.
-						[	c := strm next.
-							c ~= $" or: [ (strm peekIfAbsent: [ self skipSpacesIn: strm.  ^buf contentsWritten ]) = $" ]
-						] whileTrue: 
-							[	c = $" ifTrue: [ strm next ].
-								buf put: c ].
-						arg := buf contentsWritten	]
-		ifFalse: [	arg := strm upTo: Character space ].
-	self skipSpacesIn: strm.
-	^arg!
-
-skipSpacesIn: strm <CharInputStream>
-
-	[ strm atEnd not and: [ strm peekFor: Character space] ] whileTrue.
-! !
-
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'private-clipboard access' !
-
-
-closeClipboard
-
-	{{<user ExternalProxy CloseClipboard> call}}!
-
-emptyClipboard
-
-	{{<user ExternalProxy EmptyClipboard> call}} asBoolean
-		ifFalse: [ Win32 handleError ].
-!
-
-openClipboard
-
-	{{<user ExternalProxy OpenClipboard> hnd: Win32 NULL}} asBoolean
-		ifFalse: [ Win32 handleError ].
-! !
-
-! (Delta mirrorFor: #Platform) classSide methodsFor: 'testing' !
-
-
-usesCrLfConvention ^<Boolean>
-
-	^true! !
+	^strm peek = $"
+		ifTrue: [		strm next.
+						strm upTo: $"	]
+		ifFalse: [	strm upTo: Character space ]! !
 

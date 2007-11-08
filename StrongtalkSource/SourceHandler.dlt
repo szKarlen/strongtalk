@@ -137,9 +137,9 @@ checkSystemConsistency ^<Tuple[Boolean,Boolean]>
 	self identificationFile exists ifTrue: [
 		BootStrapping
 			ifTrue: [	idStream := self identificationFile charInputStream.
-							newID := Platform commandLineTokens next ]
+							newID := Platform getArguments first ]
 			ifFalse: [	idStream := self identificationFile readStream.
-							newID := SessionModel current commandLineTokens next ].
+							newID := SessionModel current commandLine first ].
 		[	
 			oldID := idStream nextChunk.
 			oldLogSize := Integer readFrom: idStream.
@@ -416,10 +416,10 @@ systemBeingSaved
 	"Write new identification file"
 	BootStrapping
 		ifTrue: [
-			identification := Platform commandLineTokens next.
+			identification := Platform getArguments first.
 			idStream := self identificationFile charOutputStream ]
 		ifFalse: [
-			identification := SessionModel current commandLineTokens next.
+			identification := SessionModel current commandLine first.
 			idStream := self identificationFile writeStream ].
 	[ 	idStream 
 			deltaNextChunkPut: identification; cr; 
@@ -444,9 +444,9 @@ systemIsConsistent ^<Boolean>
 	self identificationFile exists ifTrue: [
 		BootStrapping
 			ifTrue: [	idStream := self identificationFile charInputStream.
-							newID := Platform commandLineTokens next ]
+							newID := Platform getArguments first ]
 			ifFalse: [	idStream := self identificationFile readStream.
-							newID := SessionModel current commandLineTokens next ].
+							newID := SessionModel current commandLine first ].
 		[	
 			oldID := idStream nextChunk.
 			oldLogSize := Integer readFrom: idStream.
