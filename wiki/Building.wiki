@@ -79,7 +79,7 @@ To build with gcc optimizations enabled add OPT=-O[1, 2 or 3] to the build comma
 
 There are four build files in the build directory. You only need to be interested in three of them - makefile, makefile-macros.incl and makefile.incl. The fourth - makefile-asm.incl - is no longer used. It was used to build the assembler files. Since prunedtree translated the TASM assembler source to be dynamically generated using the builtin strongtalk assembler the raw assembler is redundant. This formed the basis for the gcc build (together with some changes from Dave Raymer) on which my linux stuff is based.
 
-I have loaded a base linux compatible image together with the required source directory on to the downloads page of the strongtalk Wiki. You should untar it in the strongtalk checkout directory.
+I have loaded a base linux compatible image together with the required source directory on to the downloads page. You should untar it in the strongtalk checkout directory.
 
 The Strongtalk image maps a short form of the shared object/DLL name to the file name (under Windows 'kernel' maps to ' kernel32.dll' etc.).
 
