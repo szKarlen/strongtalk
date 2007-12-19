@@ -65,7 +65,7 @@ So if you look at the project properties, in the default properties for all file
 
 Building under Linux is pretty simple. I use Eclipse CDT as my IDE, but using standard make, so you can build from the command line without Eclipse.
 
-First you need to check out the gcc-linux branch from subversion.
+First you need to check out the gcc-linux branch from subversion - http://strongtalk.googlecode.com/svn/branches/gcc-linux.
 
 The make files reside in a directory named build, immediately beneath the checkout directory. cd to the build directory and run the following
 
