@@ -60,3 +60,33 @@ Any file that does *not* include `_precompiled.incl` must be compiled with the "
 Since the precompiled headers need to be built before they are used, the first file compiled must be the one using the /Yc option.  That file is runtime\shell.cpp.
 
 So if you look at the project properties, in the default properties for all files, you will see the /Yu option set under precompiled headers.  Then, shell.cpp overrides that with /Yc, and os_nt.cpp overrides that with "Not using precompiled headers"
+
+= Building under Linux =
+
+Building under Linux is pretty simple. I use Eclipse CDT as my IDE, but using standard make, so you can build from the command line without Eclipse.
+
+First you need to check out the gcc-linux branch from subversion.
+
+The make files reside in a directory named build, immediately beneath the checkout directory. cd to the build directory and run the following
+
+{{
+   make ROOT_DIR=<absolute-path-to-checkout> default
+}}
+
+If everything goes well this should result in a strongtalk executable in the build directory. You should expect to see a number of warnings but no errors (at least under gcc 4.1.3).
+
+To build with gcc optimizations enabled add OPT=-O[1, 2 or 3] to the build command line.
+
+There are four build files in the build directory. You only need to be interested in three of them - makefile, makefile-macros.incl and makefile.incl. The fourth - makefile-asm.incl - is no longer used. It was used to build the assembler files. Since prunedtree translated the TASM assembler source to be dynamically generated using the builtin strongtalk assembler the raw assembler is redundant. This formed the basis for the gcc build (together with some changes from Dave Raymer) on which my linux stuff is based.
+
+I have loaded a base linux compatible image together with the required source directory on to the downloads page of the strongtalk Wiki. You should untar it in the strongtalk checkout directory.
+
+The Strongtalk image maps a short form of the shared object/DLL name to the file name (under Windows 'kernel' maps to ' kernel32.dll' etc.).
+
+Under Linux the equivalent mapping is currently to map libc to libc.so.6. The obvious mapping to libc.so doesn't work because, at least under my Ubuntu environment, this is a linker script that is not understood by dlopen :( If this file does not exist in your environment you may need to create a link with this name to libc.so. We need a better way of doing these mappings than the hard-coded approach currently in use, but that's the way it works for now.
+
+Once you have made that change, you should be able to launch the image from the root of the strongtalk checkout, using something like the following.
+
+{{
+   build/strongtalk -f tools/strongtalkrc-forInterpretedTests -script tools/test.dlt
+}}
