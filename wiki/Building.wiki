@@ -41,7 +41,7 @@ Basically, all primdeffilter does is find the comments that start with '//%prim'
 
 ===== Generating prims.inc =====
 
-Once the primitive annotations have been extracted or hand-entered into prims.inc, a Strongtalk tool, DeltaPrimitiveGenerator, is used to parse that and produce the prims.inc file.
+Once the primitive annotations have been extracted or hand-entered into prims.src, a Strongtalk tool, DeltaPrimitiveGenerator, is used to parse that and produce the prims.inc file.
 
 To run this tool, you must place the prims.src file in the in the startup directory for Strongtalk, run Strongtalk, and evaluate 'DeltaPrimitiveGenerator doit'.  This will generate prims.inc in that same directory.  prims.inc should then be moved to the vm/prims directory.
 
