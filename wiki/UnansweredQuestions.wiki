@@ -1,3 +1,5 @@
+#summary Questions about the current design of the virtual machine
+
 =Unanswered Questions=
 
 This page is intended to hold questions about the VM or Smalltalk image code to which we have no answers. Typically these will reflect design decisions made by the original developers who are no longer actively involved in the project. As answers to these questions are supplied this page will be updated accordingly.
