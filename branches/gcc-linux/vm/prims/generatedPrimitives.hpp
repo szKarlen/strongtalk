@@ -42,9 +42,11 @@ class PrimitivesGenerator: StackObj {
   Address doubleKlass_addr()	{ return Address(int(&doubleKlassObj), relocInfo::external_word_type); }
   Address contextKlass_addr()	{ return Address(int(&contextKlassObj), relocInfo::external_word_type); }
 
+  Label error_receiver_has_wrong_type;
   Label error_first_argument_has_wrong_type;
   Label error_division_by_zero;
   Label error_overflow;
+  Label allocation_failure;
 
   void scavenge(int size);
   void test_for_scavenge(Register dst, int size, Label& need_scavenge);
@@ -77,13 +79,15 @@ class PrimitivesGenerator: StackObj {
   char* allocateBlock(int n);
   char* allocateContext_var();
   char* allocateContext(int n);
-
+// slr perf testing
+  char* inline_allocation();
+//
   friend class GeneratedPrimitives;
 };
 
 class GeneratedPrimitives: AllStatic {
  private:
-  enum { _code_size = 4000 };			// simply increase if too small (assembler will crash if too small)
+  enum { _code_size = 8192 };			// simply increase if too small (assembler will crash if too small)
   static bool _is_initialized;			// true if GeneratedPrimitives has been initialized
   static char _code[_code_size];		// the code buffer for the primitives
 
@@ -108,6 +112,7 @@ class GeneratedPrimitives: AllStatic {
   static char* _primitiveNew[];
   static char* _allocateBlock[];
   static char* _allocateContext[];
+  static char* _primitiveInlineAllocations;
 
   // helpers for generation and patch
   static char* patch(char* name, char* entry_point);

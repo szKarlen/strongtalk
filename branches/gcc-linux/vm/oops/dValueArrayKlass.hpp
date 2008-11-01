@@ -33,8 +33,8 @@ class doubleValueArrayKlass: public memOopKlass {
   }
  
   // creation operations
-  oop allocateObject();
-  oop allocateObjectSize(int size);
+  oop allocateObject(bool permit_scavenge = true, bool tenured = false);
+  oop allocateObjectSize(int size, bool permit_scavenge=true, bool tenured = false);
 
   // creates invocation
   klassOop create_subclass(mixinOop mixin, Format format);

@@ -25,18 +25,27 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 # include "incls/_byteArrayKlass.cpp.incl"
 # include <ctype.h>
 
-oop byteArrayKlass::allocateObject() {
+oop byteArrayKlass::allocateObject(bool permit_scavenge, bool tenured) {
   assert(!can_inline_allocation(), "using nonstandard allocation");
-  fatal("should never call allocateObject in byteArrayKlass");
-  return badOop;
+  // This should not be fatal! This could be called erroneously from ST in which
+  // case it should result in an ST level error. Instead return a marked symbol
+  // to indicate the failure.
+  //fatal("should never call allocateObject in byteArrayKlass");
+  return markSymbol(vmSymbols::invalid_klass());
 }
 
-oop byteArrayKlass::allocateObjectSize(int size) {
+oop byteArrayKlass::allocateObjectSize(int size, bool permit_scavenge, bool permit_tenured) {
   klassOop k        = as_klassOop();
   int      ni_size  = non_indexable_size();
   int      obj_size = ni_size + 1 + roundTo(size, oopSize) / oopSize;
   // allocate
-  byteArrayOop obj = as_byteArrayOop(Universe::allocate(obj_size, (memOop*)&k));
+  oop* result = permit_tenured ?
+    Universe::allocate_tenured(obj_size, false):
+    Universe::allocate(obj_size, (memOop*)&k, permit_scavenge);
+  
+  if (!result) return NULL;
+
+  byteArrayOop obj = as_byteArrayOop(result);
   // header
   memOop(obj)->initialize_header(true, k);
   // instance variables

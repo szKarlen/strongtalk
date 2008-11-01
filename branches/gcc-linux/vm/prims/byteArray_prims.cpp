@@ -61,6 +61,29 @@ PRIM_DECL_2(byteArrayPrimitives::allocateSize, oop receiver, oop argument) {
   return obj;
 }
 
+PRIM_DECL_3(byteArrayPrimitives::allocateSize2, oop receiver, oop argument, oop tenured) {
+  PROLOGUE_3("allocateSize2", receiver, argument, tenured)
+  //These should be ordinary checks in case ST code erroneously passes an invalid value.
+  //assert(receiver->is_klass() && klassOop(receiver)->klass_part()->oop_is_byteArray(),
+  //      "receiver must byte array class");
+  if (!(receiver->is_klass() && klassOop(receiver)->klass_part()->oop_is_byteArray()))
+    return markSymbol(vmSymbols::invalid_klass());
+
+  if (!argument->is_smi())
+    return markSymbol(vmSymbols::first_argument_has_wrong_type());
+
+  if (smiOop(argument)->value() < 0)
+    return markSymbol(vmSymbols::negative_size());
+
+  if (tenured != Universe::trueObj() && tenured != Universe::falseObj())
+    return markSymbol(vmSymbols::second_argument_has_wrong_type());
+
+  memOopKlass* theKlass = (memOopKlass*)klassOop(receiver)->klass_part();
+  oop result = theKlass->allocateObjectSize(smiOop(argument)->value(), false, tenured == trueObj);
+  if (result == NULL) return markSymbol(vmSymbols::failed_allocation());
+  return result;
+}
+
 PRIM_DECL_1(byteArrayPrimitives::size, oop receiver) {
   PROLOGUE_1("size", receiver);
   ASSERT_RECEIVER;

@@ -666,7 +666,7 @@ Expr* PrimInliner::obj_new() {
       default:  ; // use generic primitives
     }
   }
-  Expr* u = genCall(false);
+  Expr* u = genCall(true);
   return new KlassExpr(klass->as_klassOop(), u->preg(), u->node());
 }
 
@@ -956,7 +956,6 @@ Expr* PrimInliner::genCall(bool canFail) {
   //       this marked symbol is *never* stored on the stack but only kept in registers
   //       (otherwise GC won't work correctly). Here this is established by using the dst()
   //       of a pcall only which is pre-allocated to the result_reg.
-
   MergeNode*		nlrTestPoint	= _pdesc->can_perform_NLR() ? _scope->nlrTestPoint() : NULL;
   GrowableArray<PReg*>*	args		= _gen->pass_arguments(NULL, _pdesc->number_of_parameters());
   GrowableArray<PReg*>*	exprStack	= _pdesc->can_walk_stack() ? _gen->copyCurrentExprStack() : NULL;

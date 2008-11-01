@@ -243,7 +243,12 @@ primitive_desc* primitives::lookup(char* s, int len) {
     else return element;
   } while (first < last);
 
-  assert(first == last, "check for one element");
+  // This should not be an assertion as it is possible to compile a reference
+  // to a non-existent primitive (for an example see 
+  // ProcessPrimitiveLookupError>>provoke), in which case the lookup should
+  // fail and signal a PrimitiveLookupError - slr 24/09/2008
+
+  // assert(first == last, "check for one element");
   element = primitive_table[first];
 
   return element->compare(s, len) == 0 ? element : NULL;
@@ -476,16 +481,16 @@ primitive_desc* primitives::verified_lookup(char* selector) {
 }
 
 void primitives::initialize() {
-  _new0              = verified_lookup("primitiveNew0");
-  _new1              = verified_lookup("primitiveNew1");
-  _new2              = verified_lookup("primitiveNew2");
-  _new3              = verified_lookup("primitiveNew3");
-  _new4              = verified_lookup("primitiveNew4");
-  _new5              = verified_lookup("primitiveNew5");
-  _new6              = verified_lookup("primitiveNew6");
-  _new7              = verified_lookup("primitiveNew7");
-  _new8              = verified_lookup("primitiveNew8");
-  _new9              = verified_lookup("primitiveNew9");
+  _new0              = verified_lookup("primitiveNew0:ifFail:");
+  _new1              = verified_lookup("primitiveNew1:ifFail:");
+  _new2              = verified_lookup("primitiveNew2:ifFail:");
+  _new3              = verified_lookup("primitiveNew3:ifFail:");
+  _new4              = verified_lookup("primitiveNew4:ifFail:");
+  _new5              = verified_lookup("primitiveNew5:ifFail:");
+  _new6              = verified_lookup("primitiveNew6:ifFail:");
+  _new7              = verified_lookup("primitiveNew7:ifFail:");
+  _new8              = verified_lookup("primitiveNew8:ifFail:");
+  _new9              = verified_lookup("primitiveNew9:ifFail:");
 
   _equal             = verified_lookup("primitiveEqual:");
   _not_equal         = verified_lookup("primitiveNotEqual:");

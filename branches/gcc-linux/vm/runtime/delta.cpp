@@ -51,48 +51,12 @@ void DeltaCallCache::clearAll() {
   }
 }
 
-#ifdef JUNK
-
-/*
-extern "C" oop call_delta(void* method, oop receiver, int nofArgs, oop* args);	// see interpreter_asm.asm
-/*
-extern "C" oop _call_delta(void* method, oop receiver, int nofArgs, oop* args) {
-//  call_delta_func* __call_delta = (call_delta_func*)call_delta;
-  call_delta_func* __call_delta = (call_delta_func*)StubRoutines::call_delta();
-//  return __call_delta(method, receiver, nofArgs, args);
-  __asm {
-  //  mov         esi,esp
-    mov         eax,dword ptr [ebp+14h]
-    push        eax
-    mov         ecx,dword ptr [ebp+10h]
-    push        ecx
-    mov         edx,dword ptr [ebp+0Ch]
-    push        edx
-    mov         eax,dword ptr [ebp+8]
-    push        eax
-    call        dword ptr [ebp-4]
-    add         esp,10h
-   // cmp         esi,esp
-   // call        __chkesp (00615470)
-  }
-}*/
-/*
-extern "C" oop _call_delta(void* method, oop receiver, int nofArgs, oop* args) {
- call_delta_func* __call_delta = (call_delta_func*)StubRoutines::call_delta();
- return __call_delta(method, receiver, nofArgs, args);
-}*/
-
-//#define _call_delta call_delta
-
-#endif
-
 // Implementation of Delta
 
 typedef oop (call_delta_func)(void* method, oop receiver, int nofArgs, oop* args);
 
 oop Delta::call_generic(DeltaCallCache* ic, oop receiver, oop selector, int nofArgs, oop* args) {
   call_delta_func* _call_delta = (call_delta_func*)StubRoutines::call_delta();
-//  call_delta_func* _call_delta = call_delta;
 
   if (ic->match(receiver->klass(), symbolOop(selector))) {
     // use ic entry - but first make sure it's not a zombie nmethod
@@ -119,39 +83,42 @@ oop Delta::call_generic(DeltaCallCache* ic, oop receiver, oop selector, int nofA
 }
 
 oop Delta::does_not_understand(oop receiver, symbolOop selector, int nofArgs, oop* argArray) {
-  // message not understood...
-  BlockScavenge bs; // make sure that no scavenge happens
-  klassOop msgKlass = klassOop(Universe::find_global("Message"));
-  oop obj = msgKlass->klass_part()->allocateObject();
-  objArrayOop args = oopFactory::new_objArray(nofArgs);
-  for (int index = 0; index < nofArgs; index++)
-    args->obj_at_put(index + 1, argArray[index]);
-  assert(obj->is_mem(), "just checkin'...");
-  memOop msg = memOop(obj);
-  // for now: assume instance variables are there...
-  // later: should check this or use a VM interface:
-  // msg->set_receiver(recv);
-  // msg->set_selector(ic->selector());
-  // msg->set_arguments(args);
-  msg->raw_at_put(2, receiver);
-  msg->raw_at_put(3, selector);
-  msg->raw_at_put(4, args);
-  symbolOop sel = oopFactory::new_symbol("doesNotUnderstand:");
-  if (interpreter_normal_lookup(receiver->klass(), sel).is_empty()) {
-    // doesNotUnderstand: not found ==> process error
-    { ResourceMark rm;
-      std->print("LOOKUP ERROR\n");
-      sel->print_value(); std->print(" not found\n");
+  memOop msg;
+  symbolOop sel;
+  {
+    // message not understood...
+    BlockScavenge bs; // make sure that no scavenge happens
+    klassOop msgKlass = klassOop(Universe::find_global("Message"));
+    oop obj = msgKlass->klass_part()->allocateObject();
+    objArrayOop args = oopFactory::new_objArray(nofArgs);
+    for (int index = 0; index < nofArgs; index++)
+      args->obj_at_put(index + 1, argArray[index]);
+    assert(obj->is_mem(), "just checkin'...");
+    msg = memOop(obj);
+    // for now: assume instance variables are there...
+    // later: should check this or use a VM interface:
+    // msg->set_receiver(recv);
+    // msg->set_selector(ic->selector());
+    // msg->set_arguments(args);
+    msg->raw_at_put(2, receiver);
+    msg->raw_at_put(3, selector);
+    msg->raw_at_put(4, args);
+    sel = oopFactory::new_symbol("doesNotUnderstand:");
+    if (interpreter_normal_lookup(receiver->klass(), sel).is_empty()) {
+      // doesNotUnderstand: not found ==> process error
+      { ResourceMark rm;
+        std->print("LOOKUP ERROR\n");
+        sel->print_value(); std->print(" not found\n");
+      }
+      if (DeltaProcess::active()->is_scheduler()) {
+        DeltaProcess::active()->trace_stack();
+        fatal("lookup error in scheduler");
+      } else {
+        DeltaProcess::active()->suspend(::lookup_error);
+      }
+      ShouldNotReachHere();
     }
-    if (DeltaProcess::active()->is_scheduler()) {
-      DeltaProcess::active()->trace_stack();
-      fatal("lookup error in scheduler");
-    } else {
-      DeltaProcess::active()->suspend(::lookup_error);
-    }
-    ShouldNotReachHere();
   }
-
   // return marked result of doesNotUnderstand: message
   return Delta::call(receiver, sel, msg);
 }
