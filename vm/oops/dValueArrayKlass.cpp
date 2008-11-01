@@ -25,12 +25,12 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 # include "incls/_dValueArrayKlass.cpp.incl"
 # include <ctype.h>
 
-oop doubleValueArrayKlass::allocateObject() {
+oop doubleValueArrayKlass::allocateObject(bool permit_scavenge, bool tenured) {
   fatal("should never call allocateObject in doubleValueArrayKlass");
   return badOop;
 }
 
-oop doubleValueArrayKlass::allocateObjectSize(int size) {
+oop doubleValueArrayKlass::allocateObjectSize(int size, bool permit_scavenge, bool permit_tenured) {
   klassOop k        = as_klassOop();
   int      ni_size  = non_indexable_size();
   int      obj_size = ni_size + 1 + roundTo(size * sizeof(double), oopSize) / oopSize;

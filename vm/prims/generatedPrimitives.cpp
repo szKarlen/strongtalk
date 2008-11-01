@@ -45,6 +45,7 @@ char* GeneratedPrimitives::_primitiveValue[10];
 char* GeneratedPrimitives::_primitiveNew[10];
 char* GeneratedPrimitives::_allocateBlock[10];
 char* GeneratedPrimitives::_allocateContext[3];
+char* GeneratedPrimitives::_primitiveInlineAllocations          = NULL;
 
 extern "C" void scavenge_and_allocate(int size);
 
@@ -77,22 +78,31 @@ void PrimitivesGenerator::error_jumps() {
   Address _receiver_has_wrong_type		= Address((int)&vm_symbols[VMSYMBOL_ENUM_NAME(receiver_has_wrong_type)],	relocInfo::external_word_type);
   Address _division_not_exact			= Address((int)&vm_symbols[VMSYMBOL_ENUM_NAME(division_not_exact)],		relocInfo::external_word_type);
   Address _first_argument_has_wrong_type	= Address((int)&vm_symbols[VMSYMBOL_ENUM_NAME(first_argument_has_wrong_type)],	relocInfo::external_word_type);
+  Address _allocation_failure           	= Address((int)&vm_symbols[VMSYMBOL_ENUM_NAME(failed_allocation)],  	        relocInfo::external_word_type);
   
 #undef  VMSYMBOL_POSTFIX
 #undef  VMSYMBOL_ENUM_NAME
   
+  masm->bind(error_receiver_has_wrong_type);
+  masm->movl(eax, _receiver_has_wrong_type);
+  masm->addl(eax, 2);
+  masm->ret(2 * oopSize);
   masm->bind(error_first_argument_has_wrong_type);
   masm->movl(eax, _first_argument_has_wrong_type);
   masm->addl(eax, 2);
-  masm->ret(8);
+  masm->ret(2 * oopSize);
   masm->bind(error_overflow);
   masm->movl(eax, _smi_overflow);
   masm->addl(eax, 2);
-  masm->ret(8);
+  masm->ret(2 * oopSize);
   masm->bind(error_division_by_zero);
   masm->movl(eax, _division_by_zero);
   masm->addl(eax, 2);
-  masm->ret(8);
+  masm->ret(2 * oopSize);
+  masm->bind(allocation_failure);
+  masm->movl(eax, _allocation_failure);
+  masm->addl(eax, 2);
+  masm->ret(2 * oopSize);
 }
 
 // generators are in xxx_prims_gen.cpp files
@@ -248,7 +258,7 @@ void GeneratedPrimitives::init() {
   _double_from_smi 		= patch("primitiveAsFloat", 			gen.double_from_smi());
 
   for (n = 0; n <= 9; n++) {
-    _primitiveNew[n] = patch("primitiveNew%1d", gen.primitiveNew(n), n);
+    _primitiveNew[n] = patch("primitiveNew%1d:ifFail:", gen.primitiveNew(n), n);
   }
 
   for (n = 0; n <= 9; n++) {
@@ -260,7 +270,9 @@ void GeneratedPrimitives::init() {
   for (n = 0; n <= 2; n++) {
     _allocateContext[n] = patch("primitiveCompiledContextAllocate%1d", gen.allocateContext(n), n);
   }
-
+  
+  _primitiveInlineAllocations = patch("primitiveInlineAllocations:count:", gen.inline_allocation());
+  
   masm->finalize();
   _is_initialized = true;
 

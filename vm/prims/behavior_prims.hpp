@@ -30,6 +30,24 @@ class behaviorPrimitives : AllStatic {
   static int number_of_calls;
 
   //%prim
+  // <NoReceiver> primitiveNew: class <Behavior> 
+  //              tenured: tenured <Boolean>
+  //              ifFail: failBlock <PrimFailBlock> ^<Instance> =
+  //   Internal { error = #(ReceiverIsIndexable)
+  //              name  = 'behaviorPrimitives::allocate3'
+  //              flags = #Allocate }
+  //%
+  static PRIM_DECL_2(allocate3, oop receiver, oop tenured);
+
+  //%prim
+  // <Behavior> primitiveNew2IfFail: failBlock <PrimFailBlock> ^<Instance> =
+  //   Internal { error = #(ReceiverIsIndexable)
+  //              name  = 'behaviorPrimitives::allocate2'
+  //              flags = #Allocate }
+  //%
+  static PRIM_DECL_1(allocate2, oop receiver);
+
+  //%prim
   // <Behavior> primitiveNewIfFail: failBlock <PrimFailBlock> ^<Instance> =
   //   Internal { error = #(ReceiverIsIndexable)
   //              name  = 'behaviorPrimitives::allocate'
@@ -158,80 +176,81 @@ class behaviorPrimitives : AllStatic {
   static PRIM_DECL_2(is_class_of, oop receiver, oop obj);
 };
 
-class behaviorPrimitivesGenerator : StackObj {
-
-public:
-  behaviorPrimitivesGenerator(MacroAssembler* masm);
-  
-  char* generate_primitiveNew(int i);
-};
 
 //%prim
-// <Behavior> primitiveNew0 ^<Object> = 
+// <NoReceiver> primitiveInlineAllocations: behavior <Behavior>
+//                                   count: count <SmallInt> ^<Instance> = 
+//   Internal { flags = #(Allocate LastDeltaFrameNotNeeded)
+//              name  = 'primitiveInlineAllocations' }
+//%
+extern "C" oop primitiveInlineAllocations(oop receiver, oop count);
+
+//%prim
+// <Behavior> primitiveNew0: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew0' }
 //%
-extern "C" oop primitiveNew0(oop receiver);
+extern "C" oop primitiveNew0(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew1 ^<Instance> = 
+// <Behavior> primitiveNew1: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew1' }
 //%
-extern "C" oop primitiveNew1(oop receiver);
+extern "C" oop primitiveNew1(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew2 ^<Instance> = 
+// <Behavior> primitiveNew2: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew2' }
 //%
-extern "C" oop primitiveNew2(oop receiver);
+extern "C" oop primitiveNew2(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew3 ^<Instance> = 
+// <Behavior> primitiveNew3: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew3' }
 //%
-extern "C" oop primitiveNew3(oop receiver);
+extern "C" oop primitiveNew3(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew4 ^<Instance> = 
+// <Behavior> primitiveNew4: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew4' }
 //%
-extern "C" oop primitiveNew4(oop receiver);
+extern "C" oop primitiveNew4(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew5 ^<Instance> = 
+// <Behavior> primitiveNew5: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew5' }
 //%
-extern "C" oop primitiveNew5(oop receiver);
+extern "C" oop primitiveNew5(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew6 ^<Instance> = 
+// <Behavior> primitiveNew6: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew6' }
 //%
-extern "C" oop primitiveNew6(oop receiver);
+extern "C" oop primitiveNew6(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew7 ^<Instance> = 
+// <Behavior> primitiveNew7: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew7' }
 //%
-extern "C" oop primitiveNew7(oop receiver);
+extern "C" oop primitiveNew7(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew8 ^<Instance> = 
+// <Behavior> primitiveNew8: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew8' }
 //%
-extern "C" oop primitiveNew8(oop receiver);
+extern "C" oop primitiveNew8(oop receiver, oop tenured);
 
 //%prim
-// <Behavior> primitiveNew9 ^<Instance> = 
+// <Behavior> primitiveNew9: tenured <Boolean> ifFail: failBlock <PrimFailBlock> ^<Instance> = 
 //   Internal { flags = #(Internal Allocate LastDeltaFrameNotNeeded)
 //              name  = 'primitiveNew9' }
 //%
-extern "C" oop primitiveNew9(oop receiver);
+extern "C" oop primitiveNew9(oop receiver, oop tenured);

@@ -125,6 +125,11 @@ PRIM_DECL_1(systemPrimitives::scavenge, oop receiver) {
   return rec;
 }
 
+PRIM_DECL_0(systemPrimitives::oopSize) {
+  PROLOGUE_0("oopSize")
+  return as_smiOop(::oopSize);
+}
+
 PRIM_DECL_1(systemPrimitives::garbageGollect, oop receiver) {
   PROLOGUE_1("garbageGollect", receiver);
   oop rec = receiver;
@@ -134,6 +139,32 @@ PRIM_DECL_1(systemPrimitives::garbageGollect, oop receiver) {
   return rec;
 }
 
+PRIM_DECL_1(systemPrimitives::expandMemory, oop sizeOop) {
+  PROLOGUE_1("expandMemory", sizeOop);
+  if (!sizeOop->is_smi())
+    return markSymbol(vmSymbols::argument_has_wrong_type());
+  int size = smiOop(sizeOop)->value();
+  if (size < 0)
+    return markSymbol(vmSymbols::argument_is_invalid());
+  Universe::old_gen.expand(size);
+  return trueObj;
+}
+
+PRIM_DECL_1(systemPrimitives::shrinkMemory, oop sizeOop) {
+  PROLOGUE_1("shrinkMemory", sizeOop);
+  if (!sizeOop->is_smi())
+    return markSymbol(vmSymbols::first_argument_has_wrong_type());
+  if (smiOop(sizeOop)->value() < 0 || smiOop(sizeOop)->value() > Universe::old_gen.free())
+    return markSymbol(vmSymbols::value_out_of_range());
+  Universe::old_gen.shrink(smiOop(sizeOop)->value());
+  return trueObj;
+}
+
+extern "C" int expansion_count;
+PRIM_DECL_0(systemPrimitives::expansions) {
+  PROLOGUE_0("expansions")
+  return as_smiOop(expansion_count);
+}
 PRIM_DECL_0(systemPrimitives::breakpoint) {
   PROLOGUE_0("breakpoint")
   {
@@ -906,4 +937,14 @@ PRIM_DECL_0(systemPrimitives::current_thread_id) {
 PRIM_DECL_0(systemPrimitives::object_memory_size) {
   PROLOGUE_0("object_memory_size");
   return oopFactory::new_double(double(Universe::old_gen.used()) / Universe::old_gen.capacity());
+}
+
+PRIM_DECL_0(systemPrimitives::freeSpace) {
+  PROLOGUE_0("freeSpace");
+  return as_smiOop(Universe::old_gen.free());
+}
+
+PRIM_DECL_0(systemPrimitives::nurseryFreeSpace) {
+  PROLOGUE_0("nurseryFreeSpace");
+  return as_smiOop(Universe::new_gen.eden()->free());
 }

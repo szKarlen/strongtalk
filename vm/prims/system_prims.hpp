@@ -91,6 +91,45 @@ class systemPrimitives : AllStatic {
   static PRIM_DECL_1(garbageGollect, oop receiver);
 
   //%prim
+  // <NoReceiver> primitiveExpandMemory: size <SmallInteger> ^<Object> =
+  //   Internal { name  = 'systemPrimitives::expandMemory' }
+  //%
+  static PRIM_DECL_1(expandMemory, oop size);
+
+  //%prim
+  // <NoReceiver> primitiveShrinkMemory: size <SmallInteger> ^<Object> =
+  //   Internal { name  = 'systemPrimitives::shrinkMemory' }
+  //%
+  static PRIM_DECL_1(shrinkMemory, oop size);
+
+  //%prim
+  // <NoReceiver> primitiveSizeOfOop ^<SmallInteger> =
+  //   Internal { name  = 'systemPrimitives::oopSize' }
+  //%
+  static PRIM_DECL_0(oopSize);
+
+  //%prim
+  // <NoReceiver> primitiveFreeSpace ^<SmallInteger> =
+  //   Internal { name  = 'systemPrimitives::freeSpace' 
+  //              doc   = 'Returns the number of unused bytes in the old generation' }
+  //%
+  static PRIM_DECL_0(freeSpace);
+
+  //%prim
+  // <NoReceiver> primitiveNurseryFreeSpace ^<SmallInteger> =
+  //   Internal { name  = 'systemPrimitives::nurseryFreeSpace' 
+  //              doc   = 'Returns the number of unused bytes in the new generation' }
+  //%
+  static PRIM_DECL_0(nurseryFreeSpace);
+
+  //%prim
+  // <NoReceiver> primitiveExpansions ^<SmallInteger> =
+  //   Internal { name  = 'systemPrimitives::expansions' 
+  //              doc   = 'Returns the number of expansions of the old generation' }
+  //%
+  static PRIM_DECL_0(expansions);
+
+  //%prim
   // <NoReceiver> primitiveBreakpoint ^<Object> =
   //   Internal { name  = 'systemPrimitives::breakpoint' }
   //%

@@ -30,6 +30,23 @@ int behaviorPrimitives::number_of_calls;
 
 #define ASSERT_RECEIVER assert(receiver->is_klass(), "receiver must klass")
 
+PRIM_DECL_2(behaviorPrimitives::allocate3, oop receiver, oop tenured) {
+  PROLOGUE_2("allocate3", receiver, tenured)
+  ASSERT_RECEIVER;
+  if (tenured != Universe::trueObj() && tenured != Universe::falseObj())
+    return markSymbol(vmSymbols::second_argument_has_wrong_type());
+  oop result = receiver->primitive_allocate(false, tenured == Universe::trueObj());
+  if (NULL == result)
+    return markSymbol(vmSymbols::failed_allocation());
+  return result;
+}
+
+PRIM_DECL_1(behaviorPrimitives::allocate2, oop receiver) {
+  PROLOGUE_1("allocate2", receiver)
+  ASSERT_RECEIVER;
+  return receiver->primitive_allocate();
+}
+
 PRIM_DECL_1(behaviorPrimitives::allocate, oop receiver) {
   PROLOGUE_1("allocate", receiver)
   ASSERT_RECEIVER;
@@ -363,13 +380,14 @@ PRIM_DECL_2(behaviorPrimitives::is_class_of, oop receiver, oop obj) {
 // empty functions, we'll patch them later
 static void trap() { assert(false, "This primitive should be patched"); };
 
-extern "C" oop primitiveNew0(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew1(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew2(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew3(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew4(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew5(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew6(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew7(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew8(oop receiver) { trap(); return NULL; };
-extern "C" oop primitiveNew9(oop receiver) { trap(); return NULL; };
+extern "C" oop primitiveInlineAllocations(oop receiver, oop count) { trap(); return NULL; };
+extern "C" oop primitiveNew0(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew1(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew2(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew3(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew4(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew5(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew6(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew7(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew8(oop receiver, oop tenured) { trap(); return NULL; };
+extern "C" oop primitiveNew9(oop receiver, oop tenured) { trap(); return NULL; };

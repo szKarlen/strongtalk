@@ -5,11 +5,11 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
 following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following 
-	  disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of Sun Microsystems nor the names of its contributors may be used to endorse or promote products derived 
-	  from this software without specific prior written permission.
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following 
+disclaimer in the documentation and/or other materials provided with the distribution.
+* Neither the name of Sun Microsystems nor the names of its contributors may be used to endorse or promote products derived 
+from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT 
 NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
@@ -79,7 +79,7 @@ void memOopKlass::oop_print_on(oop obj, outputStream* st) {
 }
 
 void memOopKlass::oop_print_value_on(oop obj, outputStream* st) {
-       if (obj == nilObj)   st->print("nil");
+  if (obj == nilObj)   st->print("nil");
   else if (obj == trueObj)  st->print("true");
   else if (obj == falseObj) st->print("false");
   else {
@@ -92,11 +92,15 @@ void memOopKlass::oop_print_value_on(oop obj, outputStream* st) {
   if (PrintOopAddress) st->print(" (%#x)", this);
 }
 
-oop memOopKlass::allocateObject() {
+oop memOopKlass::allocateObject(bool permit_scavenge, bool tenured) {
   klassOop k    = as_klassOop();
   int      size = non_indexable_size();
+
+  oop* result = basicAllocate(size, &k, permit_scavenge, tenured);
+  if (!result) 
+    return NULL;
   // allocate
-  memOop obj = as_memOop(Universe::allocate(size, (memOop*)&k));
+  memOop obj = as_memOop(result);
   // header
   obj->initialize_header(has_untagged_contents(), k);
   // instance variables
@@ -104,7 +108,7 @@ oop memOopKlass::allocateObject() {
   return obj;
 }
 
-oop memOopKlass::allocateObjectSize(int size) {
+oop memOopKlass::allocateObjectSize(int size, bool permit_scavenge, bool permit_tenured) {
   return markSymbol(vmSymbols::not_indexable());
 }
 

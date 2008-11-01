@@ -44,11 +44,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\easyunit\easyunit;.;..\..\build;..\..\vm\asm;..\..\vm\code;..\..\vm\compiler;..\..\vm\disasm;..\..\vm\interpreter;..\..\vm\lookup;..\..\vm\memory;..\..\vm\oops;..\..\vm\prims;..\..\vm\recompiler;..\..\vm\runtime;..\..\vm\topIncludes;..\..\vm\utilities"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="..\..\easyunit\easyunit;.;..\..\build;..\..\vm\asm;..\..\vm\code;..\..\vm\compiler;..\..\vm\disasm;..\..\vm\interpreter;..\..\vm\lookup;..\..\vm\memory;..\..\vm\oops;..\..\vm\prims;..\..\vm\recompiler;..\..\vm\runtime;..\..\vm\topIncludes;..\..\vm\utilities;..\..\test\memory"
 				PreprocessorDefinitions="ASSERT;DEBUG;DELTA_COMPILER;_CONSOLE;_DEBUG;WIN32;MICROSOFT;_CRT_SECURE_NO_DEPRECATE;_HAS_ITERATOR_DEBUGGING;_SECURE_SCL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="1"
+				RuntimeLibrary="0"
 				ForceConformanceInForLoopScope="false"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="incls\_precompiled.incl"
@@ -57,6 +58,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				CallingConvention="0"
 				DisableSpecificWarnings="4291"
 			/>
 			<Tool
@@ -184,6 +186,38 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\test\memory\association_klass_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\behaviorPrimsTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\blockClosureKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\byteArrayKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\byteArrayPrimsTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\doubleByteArrayTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\doubleValueArrayTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\doublOopKlassTests.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\test\interpreter\interpretedIC_tests.cpp"
 				>
 			</File>
@@ -212,11 +246,59 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\test\memory\memOopKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\mixinKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\objArrayKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\objArrayPrimsTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\old_space_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\oldGeneration.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\test\prims\oop_prims.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\test\prims\oop_prims_perform.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\processKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\proxyKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\smi_prims_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\systemPrims.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\universe_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\vframeKlassTests.cpp"
 				>
 			</File>
 			<File
@@ -1179,6 +1261,10 @@
 			</File>
 			<File
 				RelativePath="..\..\vm\oops\dValueArrayOop.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\edenMark.hpp"
 				>
 			</File>
 			<File

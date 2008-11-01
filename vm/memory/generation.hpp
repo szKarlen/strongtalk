@@ -126,9 +126,10 @@ class oldGeneration: public generation {
 
  public:
   int expand(int size);
+  int shrink(int size);
 
-  oop* allocate(int size) {
-    return current_space->allocate(size);
+  oop* allocate(int size, bool allow_expansion=true) {
+    return current_space->allocate(size, allow_expansion);
   }
 
   // called by Universe
@@ -161,7 +162,7 @@ class oldGeneration: public generation {
 
   OldWaterMark top_mark()    { return current_space->top_mark(); }
   OldWaterMark bottom_mark() { return first_space->bottom_mark(); }
-
+  OldSpaceMark memo() { return OldSpaceMark(current_space); }
  private:
   void scavenge_contents_from(OldWaterMark* mark);
 
