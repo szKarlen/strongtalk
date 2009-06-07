@@ -90,7 +90,6 @@ Execute instructions
 
      source - folder containing the source code for the Strongtalk libraries
 
-fake2
 
 
 Special situations
