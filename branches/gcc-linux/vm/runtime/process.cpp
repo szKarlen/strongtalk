@@ -140,6 +140,7 @@ void Process::basic_transfer(Process* target) {
     std->cr();
   }
   os::transfer(_thread, _event, target->_thread, target->_event);
+  applyStepping();
 }
 
 // ======= VMProcess ========
@@ -163,6 +164,7 @@ void VMProcess::transfer_to(DeltaProcess* target) {
     ::last_Delta_sp = target->_last_Delta_sp;
     DeltaProcess::set_active(target);
     DeltaProcess::set_current(target);
+    resetStepping();
   }
   basic_transfer(target);
 }
@@ -246,6 +248,49 @@ void VMProcess::execute(VM_Operation* op) {
   }
 }
 
+extern "C" void returnToDebugger() {
+  if (!DeltaProcess::active()->is_scheduler()) {
+    DeltaProcess::active()->returnToDebugger();
+  }
+}
+
+void DeltaProcess::returnToDebugger() {
+  resetStepping(); // reset dispatch table
+  resetStep();     // disable stepping
+  suspend(stopped);// stop!
+}
+
+void DebugInfo::interceptForStep() {
+  interceptorEntryPoint = &dispatchTable::intercept_for_step;
+  frameBreakpoint = NULL;
+}
+
+void DebugInfo::interceptForNext(int* fr) {
+  interceptorEntryPoint = &dispatchTable::intercept_for_next;
+  frameBreakpoint = fr;
+}
+
+void DebugInfo::interceptForReturn(int* fr) {
+  interceptorEntryPoint = &dispatchTable::intercept_for_return;
+  frameBreakpoint = fr;
+}
+void DebugInfo::apply() { 
+  if (interceptorEntryPoint) {
+    StubRoutines::setSingleStepHandler(&returnToDebugger);
+    interceptorEntryPoint(frameBreakpoint);
+    DeltaProcess::stepping = true;
+  }
+}
+
+void DebugInfo::reset() {
+  if (interceptorEntryPoint) {
+    dispatchTable::reset();
+    StubRoutines::setSingleStepHandler(NULL); // %TODO: replace with breakpoint() or similar?
+    DeltaProcess::stepping = false;
+  }
+}
+
+bool DeltaProcess::stepping = false;
 VMProcess*    VMProcess::_vm_process   = NULL;
 VM_Operation* VMProcess::_vm_operation = NULL;
 
@@ -262,7 +307,7 @@ ProcessState  DeltaProcess::_state_of_terminated_process = initialized;
 Event*        DeltaProcess::_async_dll_completion_event  = NULL;
 
 void DeltaProcess::transfer(ProcessState reason, DeltaProcess* target) {
-  // change time_stamp for targer
+  // change time_stamp for target
   target->inc_time_stamp();
 
   {
@@ -280,6 +325,7 @@ void DeltaProcess::transfer(ProcessState reason, DeltaProcess* target) {
     ::last_Delta_sp = target->_last_Delta_sp;
     set_current(target);
     set_active(target);
+    resetStepping();
   }
 
   // transfer
@@ -319,6 +365,7 @@ void DeltaProcess::transfer_to_vm() {
     _last_Delta_fp = ::last_Delta_fp;	// *don't* use accessors! (check their implementation to see why)
     _last_Delta_sp = ::last_Delta_sp;
     set_current(VMProcess::vm_process());
+    resetStepping();
   }
   basic_transfer(VMProcess::vm_process());
 }
@@ -643,6 +690,56 @@ extern "C" int        number_of_arguments_through_unpacking = 0;
 extern "C" char*      C_frame_return_addr = NULL;
 extern "C" contextOop nlr_home_context;
 
+inline void trace_deoptimization_start() {
+  if (TraceDeoptimization) {
+    std->print("[Unpacking]");
+    if (nlr_through_unpacking) {
+      std->print(" NLR %s", (nlr_home == (int) cur_fp) ? "inside" : "outside");
+    }
+    std->cr();
+    std->print(" - array ");
+    frame_array->print_value();
+    std->print_cr(" @ 0x%lx", old_fp);
+  }
+}
+inline void trace_deoptimization_frame(frame &current, oop* current_sp, char* current_pc) {
+  if (TraceDeoptimization) {
+    frame v(current_sp, current.fp(), current_pc);
+    v.print_for_deoptimization(std);
+  }
+}
+
+inline void unpack_first_frame(char* &current_pc, frame &current, CodeIterator &c) {
+  // first vframe in the array
+  if (nlr_through_unpacking) {
+    // NLR is comming through unpacked vframes
+    current_pc = c.interpreter_return_point();
+    // current_pc points to a normal return point in the interpreter.
+	// To find the nlr return point we first compute the nlr offset.
+    current_pc = ic_info_at(current_pc)->NLR_target();
+    current.set_hp(c.next_hp());
+  } else if (redo_the_send) {
+    // Deoptimizing uncommon trap
+    current_pc = Interpreter::redo_bytecode_after_deoptimization();
+    current.set_hp(c.next_hp());
+	redo_send_offset = c.next_hp() - c.hp();
+    redo_the_send = false;
+  } else {
+    // Normal case
+    current_pc = c.interpreter_return_point(true);
+    current.set_hp(c.next_hp());
+
+    if (c.is_message_send()) {
+	  number_of_arguments_through_unpacking = c.ic()->nof_arguments();
+    } else if (c.is_primitive_call()) {
+      number_of_arguments_through_unpacking = c.prim_cache()->number_of_parameters();
+    } else if (c.is_dll_call()) {
+      // The callee should not pop the argument since a DLL call is like a c function call.
+      // The continuation code for the DLL call will pop the arguments!
+      number_of_arguments_through_unpacking = 0;
+    }
+  }
+}
 // Called from assembler in unpack_unoptimized_frames.
 // Based on the statics (old_sp, old_fp, and frame_array) this function unpacks
 // the array into interpreter frames.
@@ -654,16 +751,7 @@ extern "C" void unpack_frame_array() {
   int* pc_addr = (int*) new_sp - 1;
   assert(*pc_addr = -1, "just checking");
 
-  if (TraceDeoptimization) {
-    std->print("[Unpacking]");
-    if (nlr_through_unpacking) {
-      std->print(" NLR %s", (nlr_home == (int) cur_fp) ? "inside" : "outside");
-    }
-    std->cr();
-    std->print(" - array ");
-    frame_array->print_value();
-    std->print_cr(" @ 0x%lx", old_fp);
-  }
+  trace_deoptimization_start();
 
   bool must_find_nlr_target = nlr_through_unpacking && nlr_home == (int) cur_fp;
   bool nlr_target_found     = false; // For verification
@@ -702,35 +790,7 @@ extern "C" void unpack_frame_array() {
     char* current_pc;
 
     if (first) {
-      // first vframe in the array
-      if (nlr_through_unpacking) {
-        // NLR is comming through unpacked vframes
-        current_pc = c.interpreter_return_point();
-        // current_pc points to a normal return point in the interpreter.
-	// To find the nlr return point we first compute the nlr offset.
-        current_pc = ic_info_at(current_pc)->NLR_target();
-        current.set_hp(c.next_hp());
-      } else if (redo_the_send) {
-        // Deoptimizing uncommon trap
-        current_pc = Interpreter::redo_bytecode_after_deoptimization();
-        current.set_hp(c.next_hp());
-	redo_send_offset = c.next_hp() - c.hp();
-        redo_the_send = false;
-      } else {
-        // Normal case
-        current_pc = c.interpreter_return_point(true);
-        current.set_hp(c.next_hp());
-
-        if (c.is_message_send()) {
-	  number_of_arguments_through_unpacking = c.ic()->nof_arguments();
-        } else if (c.is_primitive_call()) {
-          number_of_arguments_through_unpacking = c.prim_cache()->number_of_parameters();
-	} else if (c.is_dll_call()) {
-	  // The callee should not pop the argument since a DLL call is like a c function call.
-	  // The continuation code for the DLL call will pop the arguments!
-          number_of_arguments_through_unpacking = 0;
-	}
-      }
+      unpack_first_frame(current_pc, current, c);
     } else {
       current_pc = c.interpreter_return_point();
       current.set_hp(c.next_hp());
@@ -760,10 +820,7 @@ extern "C" void unpack_frame_array() {
       }
     }
 
-    if (TraceDeoptimization) {
-      frame v(current_sp, current.fp(), current_pc);
-      v.print_for_deoptimization(std);
-    }
+    trace_deoptimization_frame(current, current_sp, current_pc);
 
     first = false;
     // Next pc

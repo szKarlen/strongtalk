@@ -156,7 +156,7 @@ void zone::flush() {
   Processes::deoptimize_all();
  
   FOR_ALL_NMETHODS(p) { p->makeZombie(true); }
-  flushZombies();
+  flushZombies(false);
 
   verify_if_often();
 }
@@ -211,7 +211,9 @@ class ConvertBlockClosure : public ObjectClosure {
   }
 };
 
-void zone::flushZombies() {
+static nmethod* debug_nm = NULL;
+extern nmethod* recompilee;
+void zone::flushZombies(bool deoptimize) {
   // 1. cleanup all methodOop inline caches
   // 2. cleanup all nmethod inline caches
   // 3..deoptimized blocks with compiled code.
@@ -228,7 +230,10 @@ void zone::flushZombies() {
   Universe::object_iterate(&bl);
 
   FOR_ALL_NMETHODS(p) {
+    debug_nm = p;
     if (p->isZombie()) {
+      if (deoptimize)
+        Processes::deoptimize_wrt(p);
       p->flush();
     }
   }
