@@ -559,7 +559,12 @@ Expr* Inliner::inlineMerge(SendInfo* info) {
 
   if (useUncommonBranchForUnknown) {
     // generate an uncommon branch for the unknown case, not a send
-    gen->append_exit(NodeFactory::new_UncommonNode(gen->copyCurrentExprStack(), sender->bci()));
+    // use an uncommon send rather than an uncommon node to capture
+    // the argument usage in case none of the type tests uses the arguments.
+    // - was a bug slr 12/02/2009.
+    gen->append_exit(NodeFactory::new_UncommonSendNode(gen->copyCurrentExprStack(), 
+                                                       sender->bci(),
+                                                       info->sel->number_of_arguments()));
     info->needRealSend = false;
   } else if (others->isEmpty()) {
     // typecase cannot fail
@@ -614,13 +619,39 @@ Expr* Inliner::doInline(Node* start) {
   // set callee's starting point for code generation
   gen = callee->gen();
   gen->setCurrent(start);
+
+  reportInline("Inline ");
+
   callee->genCode();
 
   // make sure caller appends new code after inlined return of callee
   gen = sender->gen();
   gen->setCurrent(callee->returnPoint());
   assert(gen->current()->next() == NULL, "shouldn't have successor");
+
+  reportInline("End of ");
+
   return callee->result;
+}
+
+void Inliner::reportInline(char* prefix) {
+  if (!info()->sel) return;
+  if (!callee->methodHolder()) return;
+  char* klassName = callee->methodHolder()->klass_part()->delta_name();
+  if (!klassName) return;
+
+  int prefixLen = strlen(prefix);
+  symbolOop selector = info()->sel;
+  int length = selector->length();
+  int klassLength = strlen(klassName);
+  char* buffer = NEW_RESOURCE_ARRAY(char, klassLength + length + prefixLen + 3);
+  strcpy(buffer, prefix);
+  strcpy(buffer + prefixLen, klassName);
+  strcpy(buffer + klassLength + prefixLen, ">>");
+  strncpy(buffer + klassLength + prefixLen + 2, selector->chars(), length);
+  buffer[length + klassLength + prefixLen + 2] = '\0';
+
+  gen->append(NodeFactory::new_CommentNode(buffer));
 }
 
 Expr* Inliner::picPredict() {

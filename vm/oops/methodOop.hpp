@@ -334,3 +334,18 @@ class methodOopDesc : public memOopDesc {
 
   friend class methodKlass;
 };
+
+class StopInSelector : public ValueObj {
+private:
+  static bool ignored;
+  bool        enable;
+  bool        stop;
+  FlagSetting oldFlag;
+public:
+  StopInSelector(const char* class_name,
+                 const char* name,
+                 klassOop klass,
+                 oop method_or_selector, 
+                 bool &fl = StopInSelector::ignored,
+                 bool stop = true);
+};

@@ -209,9 +209,10 @@ class interpretedVFrame: public deltaVFrame {
 };
 
 #ifdef DELTA_COMPILER
+class DeferredExpression;
 
 class compiledVFrame: public deltaVFrame {
- public:
+public:
   // Constructors
   static compiledVFrame* new_vframe(const frame* fr, ScopeDesc* sd, int bci);
   compiledVFrame(const frame* fr, ScopeDesc* sd, int bci);
@@ -237,6 +238,7 @@ class compiledVFrame: public deltaVFrame {
   int        _bci;
 
   static contextOop compute_canonical_context(ScopeDesc* sd, const compiledVFrame* vf, contextOop con = NULL);
+  static contextOop compute_canonical_parent_context(ScopeDesc* scope, const compiledVFrame* vf, contextOop con);
   static oop        resolve_name             (NameDesc* nd,  const compiledVFrame* vf, contextOop con = NULL);
   static oop        resolve_location         (Location loc,  const compiledVFrame* vf, contextOop con = NULL);
 
@@ -266,8 +268,21 @@ class compiledVFrame: public deltaVFrame {
   oop expression_at(int index) const;
   oop context_temp_at(int offset) const;
   GrowableArray<oop>* expression_stack() const;
+  GrowableArray<DeferredExpression*>* deferred_expression_stack() const;
   void verify() const;
   void verify_debug_info() const;
+  friend class DeferredExpression;
+};
+
+class DeferredExpression : public ResourceObj {
+private:
+  compiledVFrame const * const _frame;
+  NameDesc* expression;
+public:
+  DeferredExpression(compiledVFrame const * const aframe, NameDesc* expression) :_frame(aframe), expression(expression) {}
+  oop value() {
+    return compiledVFrame::resolve_name(expression, _frame);
+  }
 };
 
 class compiledMethodVFrame : public compiledVFrame {

@@ -48,6 +48,7 @@ char* StubRoutines::_call_inspector_entry	= NULL;
 char* StubRoutines::_call_delta			= NULL;
 char* StubRoutines::_return_from_Delta		= NULL;
 char* StubRoutines::_single_step_stub		= NULL;
+char* StubRoutines::_single_step_continuation	= NULL;
 char* StubRoutines::_unpack_unoptimized_frames	= NULL;
 char* StubRoutines::_provoke_nlr_at		= NULL;
 char* StubRoutines::_continue_nlr_in_delta	= NULL;
@@ -196,18 +197,38 @@ static bool validateContextChain(blockClosureOop block) {
   assert(block->is_block(), "must be block");
   bool is_valid = true;
 
-  { contextOop con = block->lexical_scope();
+  { 
+    contextOop con = block->lexical_scope();
+    contextOop prev_con = NULL;
     // verify entire context chain
     assert(con->is_context(), "expecting a context");
 
+    //while (true) {
+    //  if (con->unoptimized_context() != NULL) {
+    //    is_valid = false;
+    //    break;
+    //  }
+    //  if (!con->has_outer_context()) break; 
+    //  con = con->outer_context();
+    //}
+
+    // slr fixup unoptimized context refs as we go
     while (true) {
       if (con->unoptimized_context() != NULL) {
         is_valid = false;
-        break;
+        if (prev_con) {
+          prev_con->set_parent(con->parent());
+        } else {
+          prev_con = con;
+        }
+        //break;
+      } else {
+        prev_con = con;
       }
       if (!con->has_outer_context()) break; 
       con = con->outer_context();
     }
+    // slr fixup unoptimized context refs as we go
   }
 
   if (is_valid) return true;
@@ -706,9 +727,11 @@ char* StubRoutines::generate_verify_context_chain(MacroAssembler* masm) {
 
   char* entry_point = masm->pc();
   masm->set_last_Delta_frame_after_call();
+  masm->pushl(self_reg); // save self (argument can get corrupted in called function)
   masm->pushl(self_reg); // pass argument (C calling convention)
   masm->call((char*)validateContextChain, relocInfo::runtime_call_type);
   masm->movl(ebx, eax);
+  masm->popl(self_reg);
   masm->popl(self_reg);
   masm->reset_last_Delta_frame();
   masm->testl(ebx,ebx);
@@ -945,6 +968,8 @@ char* StubRoutines::generate_nlr_return_from_Delta(MacroAssembler* masm) {
 extern "C" int* frame_breakpoint;   // dispatch table
 extern "C" doFn original_table[Bytecodes::number_of_codes];
 extern "C" void single_step_handler();
+
+void (*StubRoutines::single_step_fn)() = NULL;
 //extern "C" void nlr_single_step_continuation();
 
 //extern "C" char* single_step_handler;
@@ -954,9 +979,12 @@ char* StubRoutines::generate_single_step_stub(MacroAssembler* masm) {
 // slr mod:
 //   first the single step continuation
 //		- used as the return address of the single step code below
-    char* continuation_entry_point = masm->pc();
+    _single_step_continuation = masm->pc();
 	// inline cache for non local return
-	masm->ic_info(Interpreter::nlr_single_step_continuation(), 0);
+    int offset = Interpreter::nlr_single_step_continuation_entry() - _single_step_continuation;
+    int ic_info = (offset << 8) + 0;
+    masm->testl(eax, ic_info);
+	//masm->ic_info(Interpreter::nlr_single_step_continuation(), 0);
 
 	masm->reset_last_Delta_frame();
 	masm->popl(eax);
@@ -996,12 +1024,12 @@ char* StubRoutines::generate_single_step_stub(MacroAssembler* masm) {
 //  masm->hlt();
 //  slr mod: masm->movl(edx, (int)Interpreter::nlr_single_step_continuation());
 //  slr mod: masm->pushl(Address(edx));
-  masm->movl(edx, (int)continuation_entry_point);
-  masm->pushl(edx);
+  masm->pushl((int)_single_step_continuation);
 //  end slr mod
   
 //  assert(single_step_handler, "%fix this");
-  masm->jmp((char*)single_step_handler, relocInfo::runtime_call_type);
+  masm->jmp(Address(noreg, noreg, Address::no_scale, (int)&single_step_fn));
+//  masm->jmp((char*)single_step_handler, relocInfo::runtime_call_type);
 //  masm->jmp(single_step_handler, relocInfo::runtime_call_type);
   //	Should not reach here
   masm->hlt();
@@ -1420,6 +1448,7 @@ void StubRoutines::init() {
   }
 
   masm->finalize();
+  assert(code->code_size() < _code_size, "Stub routines too large for allocated space");
   _is_initialized = true;
   if (!Disclaimer::is_product() && PrintStubRoutines) {
     std->print("%d bytes generated for stub routines\n", masm->offset());
