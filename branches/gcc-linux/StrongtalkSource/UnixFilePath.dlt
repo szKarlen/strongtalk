@@ -145,6 +145,10 @@ S_IXUSR
 
 	^8r1000!
 
+StatBuffer
+
+    ^StatBuffer!
+
 createValueFor: mode <Symbol>  ^<ExternalData>
 
     mode = #read
@@ -192,7 +196,7 @@ fileAttributesFor: mode <Symbol>  ^<ExternalData>
     self shouldNotHappen.!
 
 fileDescriptorClass ^<FileDescriptor class>
-
+"%TODO delegate to Platform"
     ^UnixFileDescriptor!
 
 getegid
@@ -222,6 +226,13 @@ modeProxyFor: mode <Symbol> ^<SmallInt>
     mode = #readWrite
         ifTrue: [ ^2 ]!
 
+open: dname <ExternalProxy> mode: dmode <SmallInt> ^ <ExternalProxy>
+
+   ^{{<libc ExternalProxy open>
+    		name: dname
+    		flags: dmode
+    		permissions: 8r777 }}!
+
 sharingValueFor: mode <Symbol> ^<ExternalData>
 
     mode = #read
@@ -234,18 +245,29 @@ stat: testBlock ifFail: failBlock
     | statBuffer <StatBuffer> 
     	status <ExternalProxy>
     	name <CString> |
-    statBuffer := StatBuffer new.
+    statBuffer := self StatBuffer new.
     statBuffer allocate.
     name := CString for: self name.
-    [ status := {{<libc ExternalProxy __xstat>
-    					version: statBuffer version
-            			name: name
-            			buffer: statBuffer    }}.
+    [ status := self statName: name
+            			buffer: statBuffer.
 	status asSmallInteger == -1
 		ifTrue: [ failBlock value ]
 		ifFalse: [ ^testBlock value: statBuffer ]]
 		ensure: [ statBuffer free.
-						name free]! !
+						name free]!
+
+statFailed
+
+	| errno|
+	errno := self lastError.
+	self error: 'could not stat file: ', errno printString!
+
+statName: name buffer: statBuffer
+
+    ^{{<libc ExternalProxy __xstat>
+   				version: statBuffer version
+       			name: name
+       			buffer: statBuffer}}! !
 
 ! (Delta mirrorFor: #UnixFilePath) methodsFor: 'restricted' !
 
@@ -258,10 +280,8 @@ openInternalFor: mode <Symbol> ifFail: err <[ExternalError, ^X def]>  ^<External
     dname := self nameProxy.
 
     [ dmode := self modeFor: mode.
-    	proxy := {{<libc ExternalProxy open>
-    					name: dname
-    					flags: dmode
-    					create: 8r777 }} ]
+    	proxy := self open: dname
+    						mode: dmode]
     		ensure: [ dname free ].
 
     ^proxy isAllOnes
@@ -286,18 +306,20 @@ deletePathIfFail: blk <[Symbol]>
 exists ^<Boolean>
 	| name result |
 	name := self nameProxy.
-    [ result := {{<libc ExternalProxy open>
+    [result := {{<libc ExternalProxy open>
    	 					name: name
-    					flags: 0}}.
-     	^result asSmallInteger >= 0]
-     	ensure: [ name free.
-     				{{<libc ExternalProxy close>
-   	 					fd: result}} ]!
+    					flags: 0
+    					ignored: 0}}.
+    result asInteger > 0
+    	ifTrue: [{{<libc ExternalProxy close>
+   							fd: result}}]]
+     	ensure: [ name free ].
+    ^result isAllOnes not!
 
 isDirectory ^<Boolean>
 
     ^self stat: [:stat| (stat mode bitAnd: self S_IFDIR) == self S_IFDIR]
-    	ifFail: [ self error: 'could not stat file' ]!
+    	ifFail: [ self statFailed ]!
 
 isReadOnly ^<Boolean>
 
@@ -314,5 +336,5 @@ isWriteable
     				(stat uid == self geteuid and: [(stat mode bitAnd: self S_IWUSR) == self S_IWUSR])
     					or: [(stat gid == self getegid and: [(stat mode bitAnd: self S_IWGRP) == self S_IWGRP])
     					or: [(stat mode bitAnd: self S_IWOTH) == self S_IWOTH]]]
-    	ifFail: [ self error: 'could not stat file' ]! !
+    	ifFail: [ self statFailed ]! !
 

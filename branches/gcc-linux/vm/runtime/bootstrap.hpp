@@ -29,9 +29,6 @@ class bootstrap: CHeapObj {
   oop* oop_table;
   int number_of_oops;
   int max_number_of_oops;
-
-  int position;
-
   bool _new_format;
 
   void initialize_tables(int initial_table_size);
@@ -43,8 +40,8 @@ class bootstrap: CHeapObj {
   char* file_name;
   FILE* stream;
 //  int   file_size;
-  inline char get_char();
-  inline int  get_integer();
+  char get_char();
+  int  get_integer();
 
   // Error handline
   bool _has_error;

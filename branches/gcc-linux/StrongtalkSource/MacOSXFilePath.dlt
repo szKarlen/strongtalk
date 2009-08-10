@@ -1,0 +1,40 @@
+Delta define: #MacOSXFilePath as: (
+(Class subclassOf: 'UnixFilePath' instanceVariables: '')) !
+
+(Delta mirrorFor: #MacOSXFilePath) revision: '$Revision:$'!
+
+(Delta mirrorFor: #MacOSXFilePath) group: 'Unclassified'!
+
+(Delta mirrorFor: #MacOSXFilePath)
+comment: 
+''!
+
+! (Delta mirrorFor: #MacOSXFilePath) methodsFor: 'private' !
+
+
+O_CREAT
+
+	^16r200!
+
+O_TRUNC
+
+	^16r400!
+
+StatBuffer
+
+	^MacOSXStatBuffer!
+
+fileDescriptorClass ^<FileDescriptor class>
+"%TODO delegate to Platform"
+    ^MacOSXFileDescriptor!
+
+statBufferClass
+
+	^MacOSXStatBuffer!
+
+statName: name buffer: statBuffer
+
+    ^{{<libc ExternalProxy stat>
+       			name: name
+       			buffer: statBuffer}}! !
+
