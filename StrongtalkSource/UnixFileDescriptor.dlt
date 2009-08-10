@@ -80,16 +80,27 @@ severExternalConnections
 ! (Delta mirrorFor: #UnixFileDescriptor) methodsFor: 'i/o' !
 
 
+read: handle buffer: buffer count: count
+
+	^{{<libc ExternalProxy read>
+		fd: handle
+		buffer: buffer
+		count: count }}!
+
 readAt: pos <Int> ifFail: errf <[ExternalError]> ^<Int>
     | result <ExternalProxy> count <Int> |
     self position = pos
         ifFalse: [ self position: pos ].
     self knowAtEnd
         ifTrue: [ count := 0 ]
-        ifFalse: [ count := {{<libc ExternalProxy read>
-        				                fd: self handle
+        ifFalse: [result := self read: self handle
                         				buffer: self buffer
-                        				count: self bufferSize }} asSmallInteger ].
+                        				count: self bufferSize.
+                     result isAllOnes
+                     	ifTrue: [|msg|
+                     				msg := self errorText: 'Error filling buffer: '.
+                     				errf value: msg]
+                     	ifFalse: [count := result asSmallInteger ]].
     self setPosition: self position + count.
     ^count!
 
@@ -117,6 +128,14 @@ SEEK_SET
 
 	^0!
 
+errno
+
+	^{{primitiveGetLastError}}!
+
+errorText: message
+
+	^message , self errno printString!
+
 initializeIOCount
     ioCount := ExternalProxy new.
     ioCount malloc: 4.!
@@ -125,14 +144,23 @@ ioCount ^<ExternalProxy>
 
     ^ioCount!
 
+lseek: handle position: p <Int> whence: whence <Int>
+    "%todo: support large integer positions for extremely large files"
+    ^ {{<libc ExternalProxy lseek>
+        				fd: handle
+        				offset: p
+        				whence: whence }}!
+
 postCopy
     super postCopy.
     self initializeIOCount.!
 
 setExternalPosition: p <Int>
     "%todo: support large integer positions for extremely large files"
-    {{<libc ExternalProxy lseek>
-        fd: self handle
-        offset: p
-        whence: self SEEK_SET }}    "FILE_BEGIN"! !
+    | result |
+    result := self lseek: self handle
+    					position: p
+           				whence: self SEEK_SET.    "FILE_BEGIN"
+    result isAllOnes
+    	ifTrue: [self error: (self errorText: 'Could not position file descriptor: ')]! !
 

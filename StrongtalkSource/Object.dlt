@@ -151,6 +151,10 @@ sunitChanged: anAspect
  
         self changed: anAspect!
 
+sunitChanged: anAspect with: value
+ 
+        self changed: anAspect with: value!
+
 sunitRemoveDependent: anObject
  
         self removeDependent: anObject! !
@@ -535,7 +539,15 @@ subclassResponsibility ^<BottomType>
 
 unimplemented ^<BottomType>
 
-	self error: 'A hook for unimplemented code has been encountered'! !
+	self error: 'A hook for unimplemented code has been encountered'!
+
+vmHalt
+
+	{{primitiveVMBreakpoint}}!
+
+vmHalt: condition
+
+	condition ifTrue: [self vmHalt]! !
 
 ! (Delta mirrorFor: #Object) methodsFor: 'private-initialization' !
 

@@ -17,6 +17,7 @@ Delta fileIn: 'CompilerTest.dlt' !
 Delta fileIn: 'ComputeHeapSetTest.dlt' !
 Delta fileIn: 'ContextNestingTest.dlt' !
 Delta fileIn: 'CoreSampler.dlt' !
+Delta fileIn: 'Counter.dlt' !
 Delta fileIn: 'DeltaParameterTest.dlt' !
 Delta fileIn: 'DeltaScopeTest.dlt' !
 Delta fileIn: 'ElementADDRESS.dlt' !
@@ -30,6 +31,7 @@ Delta fileIn: 'ErrorTest.dlt' !
 Delta fileIn: 'ExceptionSet.dlt' !
 Delta fileIn: 'ExceptionSetTest.dlt' !
 Delta fileIn: 'ExceptionTest.dlt' !
+Delta fileIn: 'ExternalReadWriteStreamTest.dlt' !
 Delta fileIn: 'FileOutSet.dlt' !
 Delta fileIn: 'FixtureA.dlt' !
 Delta fileIn: 'FixtureB.dlt' !
@@ -41,6 +43,10 @@ Delta fileIn: 'HorizontalRule.dlt' !
 Delta fileIn: 'IgnoreBlock.dlt' !
 Delta fileIn: 'LinkedExceptionHandlerTest.dlt' !
 Delta fileIn: 'ListModel.dlt' !
+Delta fileIn: 'MacOSXFileDescriptor.dlt' !
+Delta fileIn: 'MacOSXFilePath.dlt' !
+Delta fileIn: 'StatBuffer.dlt' !
+Delta fileIn: 'MacOSXStatBuffer.dlt' !
 Delta fileIn: 'MessageNotUnderstood.dlt' !
 Delta fileIn: 'MessageNotUnderstoodTest.dlt' !
 Delta fileIn: 'Model.dlt' !
@@ -48,6 +54,7 @@ Delta fileIn: 'NIBA.dlt' !
 Delta fileIn: 'NIBB.dlt' !
 Delta fileIn: 'NIBC.dlt' !
 Delta fileIn: 'NIBD.dlt' !
+Delta fileIn: 'NLRAlignmentTest.dlt' !
 Delta fileIn: 'NonInlinedBlockTest.dlt' !
 Delta fileIn: 'Notification.dlt' !
 Delta fileIn: 'NotificationTest.dlt' !
@@ -55,10 +62,10 @@ Delta fileIn: 'ProcessExceptionHandlingTest.dlt' !
 Delta fileIn: 'RecursionBlockTest.dlt' !
 Delta fileIn: 'SequenceableCollectionTest.dlt' !
 Delta fileIn: 'SortedCollectionTest.dlt' !
-Delta fileIn: 'StatBuffer.dlt' !
 Delta fileIn: 'TM.dlt' !
 Delta fileIn: 'TestRunner.dlt' !
 Delta fileIn: 'TextModel.dlt' !
+Delta fileIn: 'TextTestRunner.dlt' !
 Delta fileIn: 'TimeT.dlt' !
 Delta fileIn: 'ToolBar.dlt' !
 Delta fileIn: 'ToolBarHolder.dlt' !
