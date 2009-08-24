@@ -1,7 +1,12 @@
 #summary Building the Virtual Machine
 
+These instructions supercede the prior instrcutions now held in the [http://strongtalk.googlecode.com/wiki/OldBuildInstructions Old Build Instructions].
 
-At the moment the bulk of the documentation on how to build the VM is in [http://strongtalk.googlecode.com/svn/trunk/README.txt readme.txt] in the repository.
+= Building Under Windows using VS 2008 Express =
+
+Check out the project using the gcc-linux branch (for the time being). Despite the name of this branch, it also includes support for Windows and OSX. In effect, this branch forms the current HEAD for the project. When time permits the code from this branch will be merged into the trunk.
+
+In addition to the VM code checked in to SVN you will also need an up-to-date image and sources directory. These can be found in the image and sources download for the latest build from the downloads page - TBC.
 
 A few bits of additional information follow.
 
