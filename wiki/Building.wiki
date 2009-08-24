@@ -1,6 +1,6 @@
 #summary Building the Virtual Machine
 
-These instructions supercede the prior instrcutions now held in the [http://code.googlecode.com/p/strongtalk/wiki/OldBuildInstructions Old Build Instructions].
+These instructions supercede the prior instrcutions now held in the [http://code.google.com/p/strongtalk/wiki/OldBuildInstructions Old Build Instructions].
 
 = Building Under Windows using VS 2008 Express =
 
