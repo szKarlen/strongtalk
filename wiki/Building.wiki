@@ -4,9 +4,30 @@ These instructions supercede the prior instrcutions now held in the [http://stro
 
 = Building Under Windows using VS 2008 Express =
 
-Check out the project using the gcc-linux branch (for the time being). Despite the name of this branch, it also includes support for Windows and OSX. In effect, this branch forms the current HEAD for the project. When time permits the code from this branch will be merged into the trunk.
+Check out the project using the gcc-linux branch (for the time being). Follow the instructions on the Source tab, replacing svn/trunk in the URL with svn/branches/gcc-linux. Despite the name of this branch, it also includes support for Windows and OSX. In effect, this branch forms the current HEAD for the project. When time permits the code from this branch will be merged into the trunk.
 
-In addition to the VM code checked in to SVN you will also need an up-to-date image and sources directory. These can be found in the image and sources download for the latest build from the downloads page - TBC.
+In addition to the VM code checked in to SVN you will also need an up-to-date image and sources directory. These can be found in the image and sources download for the latest build from the downloads page - [http://strongtalk.googlecode.com/files/strongtalk-r162-image%2Bsources.tgz image and sources].
+
+You should unpack the sources folder and the strongtalk.bst file from this archive into the directory formed by your checkout. This should replace the strongtalk.bst image file from the repository with the current one, and add a new source directory.
+
+Once this is done, you should open the VS solution file found at build.win32/strongtalk.sln in your checkout.
+
+The first time that you build the project, and any time that include file dependencies are changed, you should modify the properties of the strongtalk project found within the solution to rebuild the include files using makedeps. There is a Pre-Build Event found in the strongtalk project to do this. Change the Excluded From Build flag from Yes to No the first time that you build the project, and back again afterwards.
+
+You should now be able to build the solution from within VS 2008 Express. All being well VS should compile the project code and run the existing CPP tests and you should see a summary at the bottom of the screen showing something like
+
+{{{
+1>SUMMARY
+1>Test summary: SUCCESS
+1>Number of test cases ran: 28
+1>Test cases that succeeded: 28
+1>Test cases with errors: 0
+1>Test cases that failed: 0
+}}}
+
+If this does not appear. Please post a message to the list describing the problem and any error messages that you receive during the build.
+
+----
 
 A few bits of additional information follow.
 
