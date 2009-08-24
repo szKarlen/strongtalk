@@ -1,4 +1,5 @@
 #summary Building the Virtual Machine
+#labels Deprecated
 
 
 At the moment the bulk of the documentation on how to build the VM is in [http://strongtalk.googlecode.com/svn/trunk/README.txt readme.txt] in the repository.
