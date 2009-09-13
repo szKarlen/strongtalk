@@ -46,6 +46,18 @@ Delta fileIn: 'ActivationClassVMMirror.dlt' !
 Delta fileIn: 'ActivationOutliner.dlt' !
 Delta fileIn: 'ActivationVMMirror.dlt' !
 Delta fileIn: 'AddableSequenceableCollection.dlt' !
+Delta fileIn: 'IndexedByteInstanceVariables.dlt' !
+Delta fileIn: 'ByteArray.dlt' !
+Delta fileIn: 'Alien.dlt' !
+Delta fileIn: 'AlienClassTest.dlt' !
+Delta fileIn: 'AlienDemoTest.dlt' !
+Delta fileIn: 'AlienFalseTest.dlt' !
+Delta fileIn: 'AlienFunctionTest.dlt' !
+Delta fileIn: 'AlienLibraryTest.dlt' !
+Delta fileIn: 'AlienStringTest.dlt' !
+Delta fileIn: 'AlienTest.dlt' !
+Delta fileIn: 'AlienTrueTest.dlt' !
+Delta fileIn: 'AlienWeakTable.dlt' !
 Delta fileIn: 'DeltaASTNode.dlt' !
 Delta fileIn: 'DeltaFilter.dlt' !
 Delta fileIn: 'DeltaType.dlt' !
@@ -159,13 +171,13 @@ Delta fileIn: 'ClassCritical.dlt' !
 Delta fileIn: 'InstanceCritical.dlt' !
 Delta fileIn: 'Win32Control.dlt' !
 Delta fileIn: 'Button.dlt' !
-Delta fileIn: 'IndexedByteInstanceVariables.dlt' !
-Delta fileIn: 'ByteArray.dlt' !
 Delta fileIn: 'ByteArrayClassVMMirror.dlt' !
 Delta fileIn: 'ByteArrayVMMirror.dlt' !
 Delta fileIn: 'CCallBack.dlt' !
 Delta fileIn: 'CHOOSEFONT.dlt' !
 Delta fileIn: 'CString.dlt' !
+Delta fileIn: 'Callback.dlt' !
+Delta fileIn: 'CallbackTest.dlt' !
 Delta fileIn: 'CanonicalCharGlyphs.dlt' !
 Delta fileIn: 'CanonicalContextTest.dlt' !
 Delta fileIn: 'CategoryOutliner.dlt' !
@@ -183,6 +195,7 @@ Delta fileIn: 'SeqCltnReadStream.dlt' !
 Delta fileIn: 'CharacterReadStream.dlt' !
 Delta fileIn: 'SeqCltnReadWriteStream.dlt' !
 Delta fileIn: 'CharacterReadWriteStream.dlt' !
+Delta fileIn: 'CharacterTest.dlt' !
 Delta fileIn: 'ClassDescription.dlt' !
 Delta fileIn: 'Class.dlt' !
 Delta fileIn: 'ClassClassVMMirror.dlt' !
@@ -462,6 +475,7 @@ Delta fileIn: 'DeltaTemporary.dlt' !
 Delta fileIn: 'DeltaToIBMDefinitionWriter.dlt' !
 Delta fileIn: 'DeltaTopLevelDeclVar.dlt' !
 Delta fileIn: 'DeltaTrail.dlt' !
+Delta fileIn: 'DeltaTuple.dlt' !
 Delta fileIn: 'DeltaTupleType.dlt' !
 Delta fileIn: 'DeltaTypeArgIsNotSubtypeError.dlt' !
 Delta fileIn: 'DeltaTypeArgIsNotInheritedTypeError.dlt' !
@@ -495,6 +509,8 @@ Delta fileIn: 'DictionaryAtPutBenchmark.dlt' !
 Delta fileIn: 'DictionaryBenchmark.dlt' !
 Delta fileIn: 'DictionaryMerge.dlt' !
 Delta fileIn: 'DictionaryOverride.dlt' !
+Delta fileIn: 'DictionaryTest.dlt' !
+Delta fileIn: 'DirectAlienTest.dlt' !
 Delta fileIn: 'DoesNotUnderstandFixture.dlt' !
 Delta fileIn: 'DoesNotUnderstandTest.dlt' !
 Delta fileIn: 'DoubleByteArrayClassVMMirror.dlt' !
@@ -560,6 +576,8 @@ Delta fileIn: 'ExternalReadWriteStream.dlt' !
 Delta fileIn: 'ExternalReadWriteStreamTest.dlt' !
 Delta fileIn: 'ExternalStreamDescriptor.dlt' !
 Delta fileIn: 'ExternalStreamableObject.dlt' !
+Delta fileIn: 'FFICallbackReturnValue.dlt' !
+Delta fileIn: 'FFICallbackReturnValueTest.dlt' !
 Delta fileIn: 'False.dlt' !
 Delta fileIn: 'FileDescriptor.dlt' !
 Delta fileIn: 'FileOutSet.dlt' !
@@ -636,6 +654,7 @@ Delta fileIn: 'IdleTaskDataRecord.dlt' !
 Delta fileIn: 'IgnoreBlock.dlt' !
 Delta fileIn: 'Image.dlt' !
 Delta fileIn: 'IncrementAllBenchmark.dlt' !
+Delta fileIn: 'IndirectAlienTest.dlt' !
 Delta fileIn: 'InferenceClausePresentTool.dlt' !
 Delta fileIn: 'InfiniteRegion.dlt' !
 Delta fileIn: 'InliningDatabase.dlt' !
@@ -656,6 +675,7 @@ Delta fileIn: 'InvocationSourceHandler.dlt' !
 Delta fileIn: 'LOGFONT.dlt' !
 Delta fileIn: 'LOGPALETTE.dlt' !
 Delta fileIn: 'LargeInteger.dlt' !
+Delta fileIn: 'LargeIntegerTest.dlt' !
 Delta fileIn: 'Launcher.dlt' !
 Delta fileIn: 'LazyMethod.dlt' !
 Delta fileIn: 'LazyMessage.dlt' !
@@ -723,6 +743,7 @@ Delta fileIn: 'NIBD.dlt' !
 Delta fileIn: 'NLRAlignmentTest.dlt' !
 Delta fileIn: 'NestedLoopBenchmark.dlt' !
 Delta fileIn: 'NonInlinedBlockTest.dlt' !
+Delta fileIn: 'NotFoundError.dlt' !
 Delta fileIn: 'Notification.dlt' !
 Delta fileIn: 'NotificationTest.dlt' !
 Delta fileIn: 'OPENFILENAME.dlt' !
@@ -748,6 +769,7 @@ Delta fileIn: 'PermArray.dlt' !
 Delta fileIn: 'PermBenchmark.dlt' !
 Delta fileIn: 'Plan.dlt' !
 Delta fileIn: 'Planner.dlt' !
+Delta fileIn: 'PointerAlienTest.dlt' !
 Delta fileIn: 'PopUpMenuHandler.dlt' !
 Delta fileIn: 'PressHandler.dlt' !
 Delta fileIn: 'ProcessError.dlt' !
@@ -836,6 +858,7 @@ Delta fileIn: 'IndexedDoubleByteInstanceVariables.dlt' !
 Delta fileIn: 'UncompressedReadString.dlt' !
 Delta fileIn: 'String.dlt' !
 Delta fileIn: 'StringGlyph.dlt' !
+Delta fileIn: 'StringTest.dlt' !
 Delta fileIn: 'SumToBenchmark.dlt' !
 Delta fileIn: 'SuperclassClauseLocator.dlt' !
 Delta fileIn: 'SuperclassOutliner.dlt' !
@@ -856,7 +879,9 @@ Delta fileIn: 'TakBenchmark.dlt' !
 Delta fileIn: 'TaklBenchmark.dlt' !
 Delta fileIn: 'TempTranscript.dlt' !
 Delta fileIn: 'Test.dlt' !
+Delta fileIn: 'TestAlien.dlt' !
 Delta fileIn: 'TestException.dlt' !
+Delta fileIn: 'TestInvokeArgs.dlt' !
 Delta fileIn: 'TestResult.dlt' !
 Delta fileIn: 'TestRunner.dlt' !
 Delta fileIn: 'TestSuite.dlt' !
@@ -893,7 +918,9 @@ Delta fileIn: 'UIEvent.dlt' !
 Delta fileIn: 'URL.dlt' !
 Delta fileIn: 'UncompressedSymbol.dlt' !
 Delta fileIn: 'UndefinedObject.dlt' !
+Delta fileIn: 'UndefinedObjectTest.dlt' !
 Delta fileIn: 'UnixPlatform.dlt' !
+Delta fileIn: 'UnsafeAlien.dlt' !
 Delta fileIn: 'UserProtocolElement.dlt' !
 Delta fileIn: 'UserMessage.dlt' !
 Delta fileIn: 'UserCommandMessage.dlt' !

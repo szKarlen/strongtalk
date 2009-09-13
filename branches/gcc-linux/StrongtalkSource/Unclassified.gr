@@ -3,6 +3,7 @@ Delta fileIn: 'AbstractCompilerFixture.dlt' !
 Delta fileIn: 'AbstractExceptionHandlingTest.dlt' !
 Delta fileIn: 'AbstractNIB.dlt' !
 Delta fileIn: 'ActivationOutliner.dlt' !
+Delta fileIn: 'AlienDemoTest.dlt' !
 Delta fileIn: 'AssocSet.dlt' !
 Delta fileIn: 'BlockExceptionDescriptorTest.dlt' !
 Delta fileIn: 'BlockExceptionHandlerTest.dlt' !
@@ -12,6 +13,7 @@ Delta fileIn: 'BlockNLRTest.dlt' !
 Delta fileIn: 'BlockWithoutArgumentsExceptionHandlingTest.dlt' !
 Delta fileIn: 'CanonicalCharGlyphs.dlt' !
 Delta fileIn: 'CanonicalContextTest.dlt' !
+Delta fileIn: 'CharacterTest.dlt' !
 Delta fileIn: 'CommentReader.dlt' !
 Delta fileIn: 'CompilerTest.dlt' !
 Delta fileIn: 'ComputeHeapSetTest.dlt' !
@@ -20,6 +22,7 @@ Delta fileIn: 'CoreSampler.dlt' !
 Delta fileIn: 'Counter.dlt' !
 Delta fileIn: 'DeltaParameterTest.dlt' !
 Delta fileIn: 'DeltaScopeTest.dlt' !
+Delta fileIn: 'DictionaryTest.dlt' !
 Delta fileIn: 'ElementADDRESS.dlt' !
 Delta fileIn: 'ElementH4.dlt' !
 Delta fileIn: 'ElementH5.dlt' !
@@ -41,6 +44,7 @@ Delta fileIn: 'Halt.dlt' !
 Delta fileIn: 'HaltTest.dlt' !
 Delta fileIn: 'HorizontalRule.dlt' !
 Delta fileIn: 'IgnoreBlock.dlt' !
+Delta fileIn: 'LargeIntegerTest.dlt' !
 Delta fileIn: 'LinkedExceptionHandlerTest.dlt' !
 Delta fileIn: 'ListModel.dlt' !
 Delta fileIn: 'MacOSXFileDescriptor.dlt' !
@@ -62,6 +66,7 @@ Delta fileIn: 'ProcessExceptionHandlingTest.dlt' !
 Delta fileIn: 'RecursionBlockTest.dlt' !
 Delta fileIn: 'SequenceableCollectionTest.dlt' !
 Delta fileIn: 'SortedCollectionTest.dlt' !
+Delta fileIn: 'StringTest.dlt' !
 Delta fileIn: 'TM.dlt' !
 Delta fileIn: 'TestRunner.dlt' !
 Delta fileIn: 'TextModel.dlt' !
