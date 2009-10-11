@@ -26,9 +26,21 @@ subclassOf: superRef  <Str> ^ <ClassMirror>
 
 subclassOf: superRef  <Str>  instanceVariables: instVarsString <Str> ^ <ClassMirror> 
     "Creation of a Delta class constructor"
+
+	^self subclassOf: superRef
+			instanceVariables: instVarsString
+			classInstanceVariables: ''!
+
+subclassOf: superRef  <Str> 
+instanceVariables: instVarsString <Str>
+classInstanceVariables: classInstVarsString <Str> ^ <ClassMirror> 
+    "Creation of a Delta class constructor"
 | c <ClassMirror> |
 
-c := ClassMirror  subclassOf: superRef instanceVariables: instVarsString.
+c := ClassMirror
+			subclassOf: superRef
+			instanceVariables: instVarsString
+			classInstanceVariables: classInstVarsString.
 AbstractClassMirror flushSubclassHierarchyCache.
 ^c! !
 
