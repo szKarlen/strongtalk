@@ -30,7 +30,13 @@ sort: cs <Collection[Class]> ^ <OrdCltn[Class]>
 ^ClassVMMirror sort: cs!
 
 subclassOf: s <Str> instanceVariables: instVars <Str> ^ <Instance>
-    ^self new initializeSubclassOf: s instanceVariables: instVars! !
+    ^self new initializeSubclassOf: s instanceVariables: instVars!
+
+subclassOf: s <Str> instanceVariables: instVars <Str> classInstanceVariables: classInstVars <Str> ^ <Instance>
+    ^self new
+    	initializeSubclassOf: s
+    	instanceVariables: instVars
+    	classInstanceVariables: classInstVars! !
 
 ! (Delta mirrorFor: #ClassMirror) methodsFor: 'Unclassified' !
 
@@ -73,11 +79,16 @@ self superclass isNil
 		self mixin instanceVariableString isEmpty ifFalse: [
 			stream nextPutAll: ' instanceVariables: '.
 			stream nextPutAll: self mixin instanceVariableString asString printString]]
-	ifFalse: [
+	ifFalse: [|classInstVars|
 		stream nextPutAll: '(Class subclassOf: '.
 		stream nextPutAll: self mixin superclassTypeString asString printString.
 		stream nextPutAll: ' instanceVariables: '.
-		stream nextPutAll: self mixin instanceVariableString asString printString, ')'].
+		stream nextPutAll: self mixin instanceVariableString asString printString.
+		classInstVars := self mixin classSide instanceVariableString.
+		classInstVars isEmpty
+			ifFalse: [stream nextPutAll: ' classInstanceVariables: '.
+						stream nextPutAll: self mixin classSide instanceVariableString asString printString].
+		stream nextPutAll: ')'].
 
 first := true.
 classVarStr isEmpty ifFalse: [
@@ -112,6 +123,14 @@ branded: b <Boolean>
 
 self mixin branded: b.
 !
+
+classInstanceVariableString
+
+	^self mixin classSide instanceVariableString!
+
+classInstanceVariables: iv  <Str>
+
+self mixin classSide instanceVariables: iv!
 
 classProtocols: p  <Str>
 
@@ -286,6 +305,13 @@ initializeSubclassOf: s  <Str> instanceVariables: instVars  <Str>
     self initialize.
     self superclass: s.
     self instanceVariables: instVars!
+
+initializeSubclassOf: s  <Str> instanceVariables: instVars  <Str> classInstanceVariables: classInstVars <Str>
+
+    self initialize.
+    self superclass: s.
+    self instanceVariables: instVars.
+    self classInstanceVariables: classInstVars!
 
 installed  ^ <Boolean>
 "Private"
