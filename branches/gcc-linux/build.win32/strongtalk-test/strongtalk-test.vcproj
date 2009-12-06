@@ -72,6 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				UseLibraryDependencyInputs="true"
 				ShowProgress="0"
 				LinkIncremental="2"
 				GenerateManifest="false"
@@ -186,7 +187,47 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout0Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout1Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout2Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout3Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout4Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout5Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout6Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCallout7Tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\alienIntegerCalloutWithArgumentsTests.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\test\memory\association_klass_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\behaviorPrimsSuperclassTests.cpp"
 				>
 			</File>
 			<File
@@ -214,6 +255,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\test\prims\directAlienPrimsTests.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\test\memory\doubleByteArrayTests.cpp"
 				>
 			</File>
@@ -226,7 +271,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\test\prims\indirectAlienPrimsTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\integerOpsTests.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\test\interpreter\interpretedIC_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\prims\largeIntegerByteArrayPrimTests.cpp"
 				>
 			</File>
 			<File
@@ -256,6 +313,10 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\memOopAllocationTests.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\test\memory\memOopKlassTests.cpp"
@@ -294,11 +355,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\test\prims\pointerAlienPrimsTest.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\test\memory\processKlassTests.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\test\memory\proxyKlassTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\memory\proxyPrimsTest.cpp"
 				>
 			</File>
 			<File
@@ -1781,6 +1850,10 @@
 			</File>
 			<File
 				RelativePath="..\..\test\runtime\testProcess.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\test\utilities\testUtils.hpp"
 				>
 			</File>
 			<File
