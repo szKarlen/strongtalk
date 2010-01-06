@@ -228,7 +228,13 @@ typedef struct {
 } thread_args_t;
 
 void* mainWrapper(void* args) {
-	thread_args_t* wrapperArgs = (thread_args_t*) args;
+  char* stackptr;
+  asm("movl %%esp, %0;" : "=a"(stackptr));
+  
+  int (*threadMain)(void*) = ((thread_args_t*) args)->main;
+  void* parameter = ((thread_args_t*) args)->parameter;
+  int stackHeadroom = 2 * os::vm_page_size();
+  ((thread_args_t*) args)->stackLimit = stackptr - STACK_SIZE + stackHeadroom;
 	int* result = (int*) malloc(sizeof(int));
 	*result = wrapperArgs->main(wrapperArgs->parameter);
 	free(args);
@@ -626,7 +632,11 @@ extern "C" bool EnableTasks;
 
 pthread_mutex_t ThreadSection; 
 
-void ThreadCritical::intialize() { pthread_mutex_init(&ThreadSection, NULL); }
+bool ThreadCritical::_initialized = false;
+void ThreadCritical::intialize() {
+  pthread_mutex_init(&ThreadSection, NULL);
+  _initialized = true;
+}
 void ThreadCritical::release()   { pthread_mutex_destroy(&ThreadSection);     }
 
 ThreadCritical::ThreadCritical() {
